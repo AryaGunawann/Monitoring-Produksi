@@ -1,13 +1,50 @@
 export interface ProductItem {
-  name: string;
-  quantity: string;
-  date: string;
+  namabarang: string;
+  beratbersih: string;
+  ukuran: string;
+  lokasi: string;
+  masuk: number;
+  keluar: number;
+  saldoakhir: number;
+  tanggal: string;
 }
 
-const productData: ProductItem[] = [
-  { name: "Product X", quantity: "1000 unit", date: "2024-05-01" },
-  { name: "Product Y", quantity: "700 unit", date: "2024-04-28" },
-  { name: "Product Z", quantity: "300 unit", date: "2024-04-30" },
-];
+const createProductData = (
+  items: Omit<ProductItem, "saldoakhir">[]
+): ProductItem[] => {
+  return items.map((item) => ({
+    ...item,
+    saldoakhir: item.masuk - item.keluar,
+  }));
+};
 
+const productData: ProductItem[] = createProductData([
+  {
+    namabarang: "Product A",
+    beratbersih: "1000 unit",
+    ukuran: "50x40x30 cm",
+    lokasi: "Gudang A",
+    masuk: 1000,
+    keluar: 500,
+    tanggal: "2024-05-01",
+  },
+  {
+    namabarang: "Product B",
+    beratbersih: "1000 unit",
+    ukuran: "50x40x30 cm",
+    lokasi: "Gudang A",
+    masuk: 4000,
+    keluar: 2000,
+    tanggal: "2024-05-01",
+  },
+  {
+    namabarang: "Product c",
+    beratbersih: "1000 unit",
+    ukuran: "50x40x30 cm",
+    lokasi: "Gudang A",
+    masuk: 2000,
+    keluar: 1000,
+    tanggal: "2024-05-01",
+  },
+]);
 export default productData;

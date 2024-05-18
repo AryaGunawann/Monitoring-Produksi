@@ -1,25 +1,18 @@
 import React from "react";
-import {
-  Container,
-  Table,
-  Button,
-  Group,
-  Text,
-  Pagination,
-} from "@mantine/core";
+import { Container, Table, Button, Group, Text } from "@mantine/core";
 import { FaFilter } from "react-icons/fa";
-import { MaterialItem } from "../data/material";
+import { ProductItem } from "../data/product";
 
 interface Props {
-  data: MaterialItem[];
+  data: ProductItem[];
 }
 
-const MaterialTable: React.FC<Props> = ({ data }) => {
+const InventoryProduct: React.FC<Props> = ({ data }) => {
   return (
     <Container className="bg-[#3E3B64] p-6 rounded-lg">
       <Group mb="lg">
         <Text className="text-2xl font-semibold text-white">
-          Stok Barang Mentah
+          Stok Barang Jadi
         </Text>
         <Button
           leftSection={<FaFilter />}
@@ -37,21 +30,25 @@ const MaterialTable: React.FC<Props> = ({ data }) => {
         >
           <thead className="bg-gray-700">
             <tr>
-              <th className="py-3 px-6">No.</th>
-              <th className="py-3 px-6">Nama</th>
-              <th className="py-3 px-6">Kuantitas</th>
+              <th className="py-3 px-6">Tanggal Produksi</th>
+              <th className="py-3 px-6">Product</th>
+              <th className="py-3 px-6">Berat bersih</th>
+              <th className="py-3 px-6">Ukuran</th>
+              <th className="py-3 px-6">Masuk</th>
+              <th className="py-3 px-6">Keluar</th>
               <th className="py-3 px-6">Jumlah</th>
-              <th className="py-3 px-6">Tanggal Masuk</th>
             </tr>
           </thead>
           <tbody className="text-center">
             {data.map((item, index) => (
               <tr key={index} className="hover:bg-gray-700">
-                <td className="py-3 px-6">{index + 1}</td>
-                <td className="py-3 px-6">{item.NamaBarang}</td>
-                <td className="py-3 px-6">{item.Kuantitas}</td>
+                <td className="py-3 px-6">{item.tanggal}</td>
+                <td className="py-3 px-6">{item.namabarang}</td>
+                <td className="py-3 px-6">{item.beratbersih}</td>
+                <td className="py-3 px-6">{item.ukuran}</td>
+                <td className="py-3 px-6">{item.masuk}</td>
+                <td className="py-3 px-6">{item.keluar}</td>
                 <td className="py-3 px-6">{item.saldoakhir}</td>
-                <td className="py-3 px-6">{item.date}</td>
               </tr>
             ))}
           </tbody>
@@ -61,4 +58,4 @@ const MaterialTable: React.FC<Props> = ({ data }) => {
   );
 };
 
-export default MaterialTable;
+export default InventoryProduct;

@@ -7,10 +7,14 @@ const links = [
   { link: "/dasbor", label: "Dasbord" },
   { link: "/inventory", label: "Inventory" },
   { link: "/proses", label: "Proses" },
+  { link: "/report", label: "Reports" },
   {
     link: "#1",
     label: "Support",
-    links: [{ link: "/slipgaji", label: "SlipGaji" }],
+    links: [
+      { link: "/slipgaji", label: "SlipGaji" },
+      { link: "/pegawai", label: "Pegawai" },
+    ],
   },
 ];
 
@@ -37,7 +41,7 @@ export function HeaderMenu() {
           <Menu.Target>
             <a
               href={link.link}
-              className="flex items-center px-3 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-200"
+              className="flex items-center px-3 py-2 rounded text-sm font-medium text-white hover:text-black hover:bg-gray-200"
             >
               <span className="mr-1">{link.label}</span>
               <FiChevronDown className="w-4 h-4" />
@@ -52,7 +56,7 @@ export function HeaderMenu() {
       <a
         key={link.label}
         href={link.link}
-        className="block px-3 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-200"
+        className="block px-3 py-2 rounded text-sm font-medium text-white hover:text-black hover:bg-gray-200"
       >
         {link.label}
       </a>
@@ -60,7 +64,7 @@ export function HeaderMenu() {
   });
 
   return (
-    <header className="h-14 mb-24 bg-gray-100 border-b border-gray-300">
+    <header className="h-14 mb-24 bg-[#1A1741]  text-white">
       <Container size="md">
         <div className="h-14 flex justify-between items-center">
           <div className="text-lg font-bold">PT.Tritek</div>
