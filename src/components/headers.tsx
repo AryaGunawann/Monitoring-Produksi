@@ -64,7 +64,7 @@ export function HeaderMenu() {
   });
 
   return (
-    <header className="h-14 mb-24 bg-[#1A1741]  text-white">
+    <header className="mb-10 bg-[#1A1741]  text-white">
       <Container size="md">
         <div className="h-14 flex justify-between items-center">
           <div className="text-lg font-bold">PT.Tritek</div>

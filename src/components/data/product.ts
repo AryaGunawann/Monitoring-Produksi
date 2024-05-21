@@ -1,7 +1,6 @@
 export interface ProductItem {
   namabarang: string;
   beratbersih: string;
-  ukuran: string;
   lokasi: string;
   masuk: number;
   keluar: number;
@@ -22,7 +21,6 @@ const productData: ProductItem[] = createProductData([
   {
     namabarang: "Product A",
     beratbersih: "1000 unit",
-    ukuran: "50x40x30 cm",
     lokasi: "Gudang A",
     masuk: 1000,
     keluar: 500,
@@ -31,7 +29,6 @@ const productData: ProductItem[] = createProductData([
   {
     namabarang: "Product B",
     beratbersih: "1000 unit",
-    ukuran: "50x40x30 cm",
     lokasi: "Gudang A",
     masuk: 4000,
     keluar: 2000,
@@ -40,7 +37,6 @@ const productData: ProductItem[] = createProductData([
   {
     namabarang: "Product c",
     beratbersih: "1000 unit",
-    ukuran: "50x40x30 cm",
     lokasi: "Gudang A",
     masuk: 2000,
     keluar: 1000,

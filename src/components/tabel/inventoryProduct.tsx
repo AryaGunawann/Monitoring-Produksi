@@ -11,9 +11,7 @@ const InventoryProduct: React.FC<Props> = ({ data }) => {
   return (
     <Container className="bg-[#3E3B64] p-6 rounded-lg">
       <Group mb="lg">
-        <Text className="text-2xl font-semibold text-white">
-          Stok Barang Jadi
-        </Text>
+        <Text className="text-2xl font-semibold text-white">Product List</Text>
         <Button
           leftSection={<FaFilter />}
           variant="light"
