@@ -4,10 +4,10 @@ import { Menu, Group, Center, Burger, Container } from "@mantine/core";
 import { FiChevronDown } from "react-icons/fi";
 
 const links = [
-  { link: "/dasbor", label: "Dasbord" },
-  { link: "/inventory", label: "Inventory" },
-  { link: "/proses", label: "Proses" },
-  { link: "/report", label: "Reports" },
+  { link: "/products", label: "Dasbord" },
+  { link: "/Inventory", label: "Inventory" },
+  { link: "/Pengiriman", label: "Pengiriman" },
+
   {
     link: "#1",
     label: "Support",
