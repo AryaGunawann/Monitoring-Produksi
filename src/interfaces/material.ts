@@ -3,4 +3,6 @@ export interface Material {
   nama: string;
   satuan: string;
   jumlah: number;
+  createdAt: Date;
+  updatedAt: Date;
 }

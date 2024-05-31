@@ -9,4 +9,6 @@ export interface Produk {
   berat: number;
   jumlah_total: number;
   material_pendukung: MaterialPendukung[];
+  updatedAt: Date;
+  createdAt: Date;
 }
