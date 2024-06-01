@@ -40,7 +40,7 @@ const MaterialsPage = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {materials.map((material) => (
-            <Card key={material.id}>
+            <Card key={material.id} shadow="sm" className="border rounded-lg">
               <Title order={2}>{material.nama}</Title>
               <p>Satuan: {material.satuan}</p>
               <p>Jumlah: {material.jumlah}</p>

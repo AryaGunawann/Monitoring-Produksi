@@ -2,9 +2,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Material } from "../interfaces/material";
-import { Card, Loader, Alert, Title } from "@mantine/core";
+import { Loader, Alert, Title } from "@mantine/core";
 import { RiArrowUpSFill, RiArrowDownSFill } from "react-icons/ri";
-import Link from "next/link";
 
 const MaterialsTabel = () => {
   const [materials, setMaterials] = useState<Material[]>([]);

@@ -40,12 +40,12 @@ const ProductsPage = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {produk.map((p) => (
-            <Card key={p.id} shadow="sm">
+            <Card key={p.id} shadow="sm" className="border rounded-lg">
               <Title order={2}>{p.nama}</Title>
               <p>Berat: {p.berat}</p>
               <p>Jumlah Total: {p.jumlah_total}</p>
               <div className="py-7">
-                <Title order={3}>Material Pendukung:</Title>
+                <Title order={3}>Material yang di gunakan:</Title>
                 <ul>
                   {p.material_pendukung.map((mp) => (
                     <li key={mp.id}>
