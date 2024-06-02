@@ -9,11 +9,12 @@ const links = [
   { link: "/Pengiriman", label: "Pengiriman" },
 
   {
-    link: "#1",
-    label: "Support",
+    link: "",
+    label: "Data",
     links: [
       { link: "/slipgaji", label: "SlipGaji" },
       { link: "/pegawai", label: "Pegawai" },
+      { link: "/jabatan", label: "Jabatan" },
     ],
   },
 ];
@@ -27,7 +28,13 @@ export function HeaderMenu() {
 
   const items = links.map((link) => {
     const menuItems = link.links?.map((item) => (
-      <Menu.Item key={item.link}>{item.label}</Menu.Item>
+      <a
+        key={item.link}
+        href={item.link}
+        className="block px-3 py-2 rounded text-sm font-medium text-black hover:text-white hover:bg-black"
+      >
+        {item.label}
+      </a>
     ));
 
     if (menuItems) {
@@ -40,7 +47,7 @@ export function HeaderMenu() {
         >
           <Menu.Target>
             <a
-              href={link.link}
+              href="#"
               className="flex items-center px-3 py-2 rounded text-sm font-medium text-black hover:text-white hover:bg-black"
             >
               <span className="mr-1">{link.label}</span>

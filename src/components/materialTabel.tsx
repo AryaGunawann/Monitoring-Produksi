@@ -27,7 +27,7 @@ const MaterialsTabel = () => {
 
   return (
     <div className="container mx-auto py-8">
-      <div className="mb-6 text-white">
+      <div className="mb-6 text-black">
         <Title order={1}>Daftar Material</Title>
       </div>
       {loading ? (
@@ -69,9 +69,6 @@ const MaterialsTabel = () => {
                     ) : (
                       <RiArrowUpSFill className="ml-1 text-green-500" />
                     )}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200">
-                    {new Date(material.createdAt).toLocaleString()}
                   </td>
                   <td className="py-2 px-4 border-b border-gray-200">
                     {new Date(material.updatedAt).toLocaleString()}

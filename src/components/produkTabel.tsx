@@ -15,22 +15,31 @@ const ProductsPage = () => {
         const response = await axios.get("/api/produk");
         const fetchedProducts = response.data;
 
-        // Gabungkan produk dengan nama yang sama
         const produkMap = new Map();
         fetchedProducts.forEach((p) => {
-          if (produkMap.has(p.nama)) {
-            const existingProduct = produkMap.get(p.nama);
-            existingProduct.jumlah_total += p.jumlah_total;
-            existingProduct.updatedAt =
-              new Date(existingProduct.updatedAt) > new Date(p.updatedAt)
-                ? existingProduct.updatedAt
-                : p.updatedAt;
-          } else {
-            produkMap.set(p.nama, { ...p });
+          let totalMaterial = 0;
+
+          if (p.material_pendukung) {
+            p.material_pendukung.forEach((material) => {
+              totalMaterial += material.jumlah;
+            });
+          }
+
+          if (totalMaterial > 0) {
+            if (produkMap.has(p.nama)) {
+              const existingProduct = produkMap.get(p.nama);
+              existingProduct.jumlah_total += p.jumlah_total;
+              existingProduct.totalMaterial += totalMaterial;
+              existingProduct.updatedAt =
+                new Date(existingProduct.updatedAt) > new Date(p.updatedAt)
+                  ? existingProduct.updatedAt
+                  : p.updatedAt;
+            } else {
+              produkMap.set(p.nama, { ...p, totalMaterial });
+            }
           }
         });
 
-        // Konversi hasil kembali ke array
         const combinedProduk = Array.from(produkMap.values());
         setProduk(combinedProduk);
       } catch (error) {
@@ -45,7 +54,7 @@ const ProductsPage = () => {
 
   return (
     <div className="container mx-auto py-8">
-      <div className="mb-6 text-white">
+      <div className="mb-6 text-black">
         <Title order={1}>Daftar Produk</Title>
       </div>
       {loading ? (
@@ -66,7 +75,9 @@ const ProductsPage = () => {
                 <th className="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-700">
                   Jumlah Total
                 </th>
-
+                <th className="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-700">
+                  Total Material
+                </th>
                 <th className="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-700">
                   Updated At
                 </th>
@@ -83,6 +94,9 @@ const ProductsPage = () => {
                   </td>
                   <td className="py-2 px-4 border-b border-gray-200">
                     {p.jumlah_total}
+                  </td>
+                  <td className="py-2 px-4 border-b border-gray-200">
+                    {p.totalMaterial}
                   </td>
                   <td className="py-2 px-4 border-b border-gray-200">
                     {new Date(p.updatedAt).toLocaleString()}

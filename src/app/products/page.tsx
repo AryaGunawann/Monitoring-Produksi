@@ -3,12 +3,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, Loader, Alert, Title, Button } from "@mantine/core";
 import { Produk } from "../../interfaces/product";
-import Link from "next/link";
+import AddProductModal from "../../components/modal/produkModal";
 
 const ProductsPage = () => {
   const [produk, setProduk] = useState<Produk[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,13 +26,22 @@ const ProductsPage = () => {
     fetchData();
   }, []);
 
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="container mx-auto py-8">
       <div className="flex justify-between mb-6 text-white">
         <Title order={1}>Daftar Produk</Title>
-        <Link href="/products/add">
-          <Button>Add</Button>
-        </Link>
+
+        <Button onClick={openModal}>Add</Button>
+
+        <AddProductModal visible={isModalOpen} onClose={closeModal} />
       </div>
       {loading ? (
         <Loader />
@@ -43,13 +53,13 @@ const ProductsPage = () => {
             <Card key={p.id} shadow="sm" className="border rounded-lg">
               <Title order={2}>{p.nama}</Title>
               <p>Berat: {p.berat}</p>
-              <p>Jumlah Total: {p.jumlah_total}</p>
+              <p>Jumlah Dibuat: {p.jumlah_total}</p>
               <div className="py-7">
                 <Title order={3}>Material yang di gunakan:</Title>
                 <ul>
                   {p.material_pendukung.map((mp) => (
                     <li key={mp.id}>
-                      Material: {mp.nama}, Jumlah: {mp.jumlah}
+                      Material: {mp.nama}, Sisa Jumlah Material: {mp.jumlah}
                     </li>
                   ))}
                 </ul>
