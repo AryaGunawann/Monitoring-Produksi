@@ -75,9 +75,7 @@ const ProductsPage = () => {
                 <th className="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-700">
                   Jumlah Total
                 </th>
-                <th className="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-700">
-                  Total Material
-                </th>
+
                 <th className="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-700">
                   Updated At
                 </th>
@@ -95,9 +93,7 @@ const ProductsPage = () => {
                   <td className="py-2 px-4 border-b border-gray-200">
                     {p.jumlah_total}
                   </td>
-                  <td className="py-2 px-4 border-b border-gray-200">
-                    {p.totalMaterial}
-                  </td>
+
                   <td className="py-2 px-4 border-b border-gray-200">
                     {new Date(p.updatedAt).toLocaleString()}
                   </td>

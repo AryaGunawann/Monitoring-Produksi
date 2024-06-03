@@ -11,4 +11,5 @@ export interface Produk {
   material_pendukung: MaterialPendukung[];
   updatedAt: Date;
   createdAt: Date;
+  totalMaterial: string;
 }
