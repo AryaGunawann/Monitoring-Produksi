@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, Loader, Alert, Title, Button } from "@mantine/core";
-import { Produk } from "../../interfaces/product";
+import { Produk, Material } from "../../interfaces/product";
 import AddProductModal from "../../components/modal/produkModal";
 
 const ProductsPage = () => {
@@ -34,13 +34,35 @@ const ProductsPage = () => {
     setIsModalOpen(false);
   };
 
+  // Filter material berdasarkan tanggal dan waktu pembuatan terbaru
+  const filterLatestMaterial = (materials: Material[]) => {
+    return materials.sort(
+      (a: Material, b: Material) =>
+        new Date(b.tanggal_dibuat).getTime() -
+        new Date(a.tanggal_dibuat).getTime()
+    );
+  };
+
+  const filterLatestProduk = (produk: Produk[]) => {
+    const latestProduk: { [key: string]: Produk } = {};
+
+    for (const p of produk) {
+      const latestMaterial = filterLatestMaterial(p.material_pendukung);
+
+      latestProduk[p.nama] = {
+        ...p,
+        material_pendukung: latestMaterial,
+      };
+    }
+
+    return Object.values(latestProduk);
+  };
+
   return (
     <div className="container mx-auto py-8">
-      <div className="flex justify-between mb-6 text-white">
+      <div className="flex justify-between mb-6 text-black">
         <Title order={1}>Daftar Produk</Title>
-
-        <Button onClick={openModal}>Add</Button>
-
+        <Button onClick={openModal}>Buat Produk</Button>
         <AddProductModal visible={isModalOpen} onClose={closeModal} />
       </div>
       {loading ? (
@@ -48,25 +70,52 @@ const ProductsPage = () => {
       ) : error ? (
         <Alert color="red">{error}</Alert>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {produk.map((p) => (
-            <Card key={p.id} shadow="sm" className="border rounded-lg">
-              <Title order={2}>{p.nama}</Title>
-              <p>Berat: {p.berat}</p>
-              <p>Jumlah Dibuat: {p.jumlah_total}</p>
-              <div className="py-7">
-                <Title order={3}>Material yang di gunakan:</Title>
-                <ul>
-                  {p.material_pendukung.map((mp) => (
-                    <li key={mp.id}>
-                      Material: {mp.nama}, Sisa Jumlah Material: {mp.jumlah}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </Card>
-          ))}
-        </div>
+        <Card shadow="sm" className="border rounded-lg p-4">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nama Produk
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Berat
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Jumlah Dibuat
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Material Pendukung
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filterLatestProduk(produk).map((p: Produk) => (
+                  <tr key={p.id}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {p.nama}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {p.berat}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {p.jumlah_total}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <ul className="list-disc list-inside">
+                        {p.material_pendukung.map((mp: Material) => (
+                          <li key={mp.id}>
+                            {mp.nama} (Jumlah: {mp.jumlah})
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       )}
     </div>
   );

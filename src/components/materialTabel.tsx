@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Material } from "../interfaces/material";
 import { Loader, Alert, Title } from "@mantine/core";
-import { RiArrowUpSFill, RiArrowDownSFill } from "react-icons/ri";
 
 const MaterialsTabel = () => {
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -59,16 +58,12 @@ const MaterialsTabel = () => {
                   <td className="py-2 px-4 border-b border-gray-200">
                     {material.nama}
                   </td>
+
                   <td className="py-2 px-4 border-b border-gray-200">
                     {material.satuan}
                   </td>
-                  <td className="py-2 px-4 border-b border-gray-200 flex">
+                  <td className="py-2 px-4 border-b border-gray-200">
                     {material.jumlah}
-                    {material.jumlah < 0 ? (
-                      <RiArrowDownSFill className="ml-1 text-red-500" />
-                    ) : (
-                      <RiArrowUpSFill className="ml-1 text-green-500" />
-                    )}
                   </td>
                   <td className="py-2 px-4 border-b border-gray-200">
                     {new Date(material.updatedAt).toLocaleString()}

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Material } from "../../interfaces/material";
-import { Card, Loader, Alert, Title, Button } from "@mantine/core";
+import { Card, Loader, Alert, Title, Button, Table } from "@mantine/core";
 import AddMaterialModal from "../../components/modal/materialModal";
 
 const MaterialsPage = () => {
@@ -36,11 +36,9 @@ const MaterialsPage = () => {
 
   return (
     <div className="container mx-auto py-8">
-      <div className="flex justify-between mb-6 text-white">
+      <div className="flex justify-between mb-6 text-black">
         <Title order={1}>Daftar Material</Title>
-
-        <Button onClick={openModal}>Add Material</Button>
-
+        <Button onClick={openModal}>Tambah Material</Button>
         <AddMaterialModal visible={isModalOpen} onClose={closeModal} />
       </div>
       {loading ? (
@@ -48,15 +46,43 @@ const MaterialsPage = () => {
       ) : error ? (
         <Alert color="red">{error}</Alert>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {materials.map((material) => (
-            <Card key={material.id} shadow="sm" className="border rounded-lg">
-              <Title order={2}>{material.nama}</Title>
-              <p>Satuan: {material.satuan}</p>
-              <p>Jumlah: {material.jumlah}</p>
-            </Card>
-          ))}
-        </div>
+        <Card shadow="sm" className="border rounded-lg p-4">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nama Material
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Satuan
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Jumlah
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {materials.map((material) => (
+                  <tr
+                    key={material.id}
+                    className={material.jumlah === 0 ? "bg-red-100" : ""}
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {material.nama}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {material.satuan}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {material.jumlah}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       )}
     </div>
   );

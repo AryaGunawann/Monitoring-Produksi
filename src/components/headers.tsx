@@ -6,7 +6,7 @@ import { FiChevronDown } from "react-icons/fi";
 const links = [
   { link: "/products", label: "Product" },
   { link: "/materials", label: "Materials" },
-  { link: "/Pengiriman", label: "Pengiriman" },
+  { link: "/riwayat", label: "Riwayat" },
 
   {
     link: "",
