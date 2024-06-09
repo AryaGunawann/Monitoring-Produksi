@@ -16,15 +16,26 @@ export async function GET() {
   }
 }
 
-// Menambahkan material baru
-export async function POST(req: NextRequest) {
+// Menambah Jumlah
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
+    const materialId = params.id;
     const body = await req.json();
-    const response = await axios.post(`${API_BASE_URL}/material`, body);
-    return NextResponse.json(response.data, { status: 201 });
+    const jumlah = body.jumlah;
+    const response = await axios.get(`${API_BASE_URL}/material/${materialId}`);
+    const material = response.data;
+    material.jumlah += jumlah;
+    const updateResponse = await axios.put(
+      `${API_BASE_URL}/material/${materialId}`,
+      material
+    );
+    return NextResponse.json(updateResponse.data);
   } catch (error) {
     return NextResponse.json(
-      { message: "Error adding material" },
+      { message: "Error updating material quantity" },
       { status: 500 }
     );
   }

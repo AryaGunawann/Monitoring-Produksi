@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, Loader, Alert, Title, Button } from "@mantine/core";
-import { Produk, Material } from "../../interfaces/product";
+import { Produk, MaterialPendukung } from "../../interfaces/product";
 import AddProductModal from "../../components/modal/produkModal";
 
 const ProductsPage = () => {
@@ -85,33 +85,61 @@ const ProductsPage = () => {
                     Jumlah Dibuat
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Material Pendukung
+                    Material Yang Di Gunakan
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Update
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filterLatestProduk(produk).map((p: Produk) => (
-                  <tr key={p.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {p.nama}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {p.berat}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {p.jumlah_total}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <ul className="list-disc list-inside">
-                        {p.material_pendukung.map((mp: Material) => (
-                          <li key={mp.id}>
-                            {mp.nama} (Jumlah: {mp.jumlah})
-                          </li>
-                        ))}
-                      </ul>
-                    </td>
-                  </tr>
-                ))}
+                {filterLatestProduk(produk).map((p: Produk) => {
+                  const updatedAt = new Date(p.updatedAt);
+
+                  const formattedDate = updatedAt.toLocaleDateString("id-ID", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  });
+
+                  const formattedTime = updatedAt.toLocaleTimeString("id-ID", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  });
+
+                  const calculateUsedMaterialCount = (
+                    materials: MaterialPendukung[]
+                  ) => {
+                    return materials.reduce(
+                      (total, mp) => total + mp.jumlah,
+                      0
+                    );
+                  };
+                  return (
+                    <tr key={p.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {p.nama}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {p.berat}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {p.jumlah_total}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <ul className="list-disc list-inside">
+                          {p.material_pendukung.map((mp: Material) => (
+                            <li key={mp.id}>{mp.nama}</li>
+                          ))}
+                        </ul>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {`${formattedDate} ${formattedTime}`}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

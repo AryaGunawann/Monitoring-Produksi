@@ -4,6 +4,7 @@ import { Menu, Group, Center, Burger, Container } from "@mantine/core";
 import { FiChevronDown } from "react-icons/fi";
 
 const links = [
+  { link: "/", label: "Dasbor" },
   { link: "/products", label: "Product" },
   { link: "/materials", label: "Materials" },
   { link: "/riwayat", label: "Riwayat" },

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Material } from "../interfaces/material";
-import { Loader, Alert, Title } from "@mantine/core";
+import { Loader, Alert, Title, Card } from "@mantine/core";
 
 const MaterialsTabel = () => {
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -27,52 +27,69 @@ const MaterialsTabel = () => {
   return (
     <div className="container mx-auto py-8">
       <div className="mb-6 text-black">
-        <Title order={1}>Daftar Material</Title>
+        <Title order={1}>Material</Title>
       </div>
       {loading ? (
         <Loader />
       ) : error ? (
         <Alert color="red">{error}</Alert>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white">
-            <thead>
-              <tr>
-                <th className="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-700">
-                  Nama Material
-                </th>
-                <th className="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-700">
-                  Satuan
-                </th>
-                <th className="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-700">
-                  Jumlah
-                </th>
-                <th className="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-700">
-                  Updated At
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {materials.map((material) => (
-                <tr key={material.id}>
-                  <td className="py-2 px-4 border-b border-gray-200">
-                    {material.nama}
-                  </td>
-
-                  <td className="py-2 px-4 border-b border-gray-200">
-                    {material.satuan}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200">
-                    {material.jumlah}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200">
-                    {new Date(material.updatedAt).toLocaleString()}
-                  </td>
+        <Card shadow="sm" className="border rounded-lg p-4">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nama Material
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Satuan
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Jumlah
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Updated At
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {materials.map((material) => {
+                  const updatedAt = new Date(material.updatedAt);
+
+                  const formattedDate = updatedAt.toLocaleDateString("id-ID", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  });
+
+                  const formattedTime = updatedAt.toLocaleTimeString("id-ID", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  });
+
+                  return (
+                    <tr key={material.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {material.nama}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {material.satuan}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {material.jumlah}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {`${formattedDate} ${formattedTime}`}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       )}
     </div>
   );
