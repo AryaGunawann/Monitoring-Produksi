@@ -9,59 +9,42 @@ const MaterialsPage = () => {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("/api/materials");
-        // Sort materials based on updatedAt in descending order
-        const sortedMaterials = response.data.sort(
-          (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
-        );
-        setMaterials(sortedMaterials);
-      } catch (error) {
-        setError("Error fetching materials: " + error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchMaterials = async () => {
+    try {
+      const response = await axios.get<Material[]>("/api/materials");
+      const sortedMaterials = response.data.sort(
+        (a: Material, b: Material) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
+      setMaterials(sortedMaterials);
+    } catch (error) {
+      setError("Error fetching materials: " + error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchData();
+  useEffect(() => {
+    fetchMaterials();
   }, []);
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleMaterialUpdated = () => {
-    // Fetch materials again after update
-    const fetchMaterials = async () => {
-      try {
-        const response = await axios.get<Material[]>("/api/materials");
-        setMaterials(response.data);
-      } catch (error) {
-        console.error("Error fetching materials:", error);
-      }
-    };
-
-    fetchMaterials();
+  const handleModalVisibility = (isVisible: boolean) => {
+    setModalVisible(isVisible);
   };
 
   return (
     <div className="container mx-auto py-8">
       <div className="flex justify-between mb-6 text-black">
         <Title order={1}>Daftar Material</Title>
-        <Button onClick={() => setModalVisible(true)}>Tambah Material</Button>
+        <Button onClick={() => handleModalVisibility(true)}>
+          Tambah Material
+        </Button>
         <AddMaterialModal
           visible={modalVisible}
-          onClose={() => setModalVisible(false)}
-          onMaterialUpdated={handleMaterialUpdated}
+          onClose={() => handleModalVisibility(false)}
+          onMaterialAdded={fetchMaterials}
         />
       </div>
       {loading ? (
@@ -91,13 +74,11 @@ const MaterialsPage = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {materials.map((material) => {
                   const updatedAt = new Date(material.updatedAt);
-
                   const formattedDate = updatedAt.toLocaleDateString("id-ID", {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
                   });
-
                   const formattedTime = updatedAt.toLocaleTimeString("id-ID", {
                     hour: "2-digit",
                     minute: "2-digit",
