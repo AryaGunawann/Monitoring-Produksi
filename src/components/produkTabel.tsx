@@ -12,38 +12,12 @@ const ProductsPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/api/produk");
-        const fetchedProducts = response.data;
+        const response = await axios.get("/api/total");
+        const fetchedTotal = response.data;
 
-        const produkMap = new Map();
-        fetchedProducts.forEach((p) => {
-          let totalMaterial = 0;
-
-          if (p.material_pendukung) {
-            p.material_pendukung.forEach((material) => {
-              totalMaterial += material.jumlah;
-            });
-          }
-
-          if (totalMaterial > 0) {
-            if (produkMap.has(p.nama)) {
-              const existingProduct = produkMap.get(p.nama);
-              existingProduct.jumlah_total += p.jumlah_total;
-              existingProduct.totalMaterial += totalMaterial;
-              existingProduct.updatedAt =
-                new Date(existingProduct.updatedAt) > new Date(p.updatedAt)
-                  ? existingProduct.updatedAt
-                  : p.updatedAt;
-            } else {
-              produkMap.set(p.nama, { ...p, totalMaterial });
-            }
-          }
-        });
-
-        const combinedProduk = Array.from(produkMap.values());
-        setProduk(combinedProduk);
+        setProduk(fetchedTotal);
       } catch (error) {
-        setError("Error fetching produk: " + error);
+        setError("Error fetching total: " + error);
       } finally {
         setLoading(false);
       }
@@ -55,7 +29,7 @@ const ProductsPage = () => {
   return (
     <div className="container mx-auto py-8">
       <div className="mb-6 text-black">
-        <Title order={1}>Produk</Title>
+        <Title order={1}>Total Produk</Title>
       </div>
       {loading ? (
         <Loader />
@@ -70,9 +44,7 @@ const ProductsPage = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Nama Produk
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Berat
-                  </th>
+
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Jumlah Dibuat
                   </th>
@@ -102,9 +74,7 @@ const ProductsPage = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {p.nama}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {p.berat}
-                      </td>
+
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {p.jumlah_total}
                       </td>

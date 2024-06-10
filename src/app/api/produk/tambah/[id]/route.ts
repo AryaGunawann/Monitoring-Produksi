@@ -40,3 +40,19 @@ export async function PUT(
     );
   }
 }
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const produkId = params.id;
+    const response = await axios.delete(`${API_BASE_URL}/produk/${produkId}`);
+    return NextResponse.json(response.data);
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Error deleting Produk" },
+      { status: 500 }
+    );
+  }
+}

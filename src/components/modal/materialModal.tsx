@@ -57,7 +57,6 @@ const AddMaterialModal = ({
             jumlah: parseInt(jumlah),
           }
         );
-        console.log(existingMaterial.id);
       }
 
       if (response.status === 201 || response.status === 200) {
@@ -123,9 +122,8 @@ const AddMaterialModal = ({
                 { value: "new", label: "Material tidak ada dalam daftar" },
               ]}
               value={selectedMaterial}
-              onChange={(value) => handleMaterialChange(value)}
+              onChange={(value) => handleMaterialChange(value as string)}
               placeholder="Pilih Material"
-              disabled={materialList.length === 0}
             />
           </div>
           {showNewMaterialInput && (

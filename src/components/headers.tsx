@@ -7,6 +7,8 @@ const links = [
   { link: "/", label: "Dasbor" },
   { link: "/products", label: "Product" },
   { link: "/materials", label: "Materials" },
+  { link: "/packing", label: "Packing" },
+  { link: "/shipping", label: "Shipping" },
   { link: "/riwayat", label: "Riwayat" },
 
   {

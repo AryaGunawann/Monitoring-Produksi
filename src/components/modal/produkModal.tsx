@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Button, Modal, TextInput, Title, Notification } from "@mantine/core";
 import axios from "axios";
+import { showNotification } from "@mantine/notifications";
 
 interface Material {
   id: number;
@@ -10,14 +11,18 @@ interface Material {
   jumlah: number;
 }
 
+interface AddProdukModalProps {
+  visible: boolean;
+  onClose: () => void;
+  onProdukAdded: () => void;
+}
+
 // Define the component
 const AddProductModal = ({
   visible,
   onClose,
-}: {
-  visible: boolean;
-  onClose: () => void;
-}) => {
+  onProdukAdded,
+}: AddProdukModalProps) => {
   // Define state variables
   const [nama, setNama] = useState("");
   const [berat, setBerat] = useState("");
@@ -44,6 +49,23 @@ const AddProductModal = ({
   const handleSubmit = async () => {
     try {
       setLoading(true);
+
+      // Check if a product with the same name already exists
+      const existingProductResponse = await axios.get(
+        `/api/produk?nama=${nama}`
+      );
+      if (existingProductResponse.data.length > 0) {
+        showNotification({
+          title: "Duplikasi Produk",
+          message:
+            "Produk dengan nama ini sudah ada. Silahkan Hapus Terlebih Dahulu",
+          color: "red",
+          autoClose: 5000,
+        });
+        setLoading(false);
+        return;
+      }
+
       const response = await axios.post("/api/produk", {
         nama,
         berat: parseInt(berat),
@@ -53,20 +75,31 @@ const AddProductModal = ({
           jumlah: mp.jumlah_material,
         })),
       });
-      if (response.status === 201) {
-        onClose();
-        Notification.success({
-          title: "Success",
-          message: "Product added successfully!",
+
+      if (response.status === 201 || response.status === 200) {
+        showNotification({
+          title: "Sukses",
+          message: "Produk berhasil ditambahkan!",
+          color: "green",
+          autoClose: 5000,
         });
+        onProdukAdded();
+        onClose();
       }
     } catch (error) {
       console.error("Error adding produk:", error);
-      setError("Failed to add product. Please try again.");
+      showNotification({
+        title: "Gagal",
+        message: "Gagal membuat Produk!",
+        color: "red",
+        autoClose: 5000,
+      });
     } finally {
       setLoading(false);
+      onClose();
     }
   };
+
   // Handle adding new material
   const handleAddMaterial = () => {
     setMaterialPendukung((prevMaterials) => [
@@ -158,7 +191,11 @@ const AddProductModal = ({
             Batal
           </Button>
         </div>
-        {error && <Notification color="red">{error}</Notification>}{" "}
+        {error && (
+          <Notification color="red" className=" w-44">
+            {error}
+          </Notification>
+        )}{" "}
       </div>
     </Modal>
   );

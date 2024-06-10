@@ -16,6 +16,20 @@ export async function GET() {
   }
 }
 
+// Menambah Material Baru
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const response = await axios.post(`${API_BASE_URL}/material`, body);
+    return NextResponse.json(response.data, { status: 201 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Error creating material" },
+      { status: 500 }
+    );
+  }
+}
+
 // Menambah Jumlah
 export async function PUT(
   req: NextRequest,
