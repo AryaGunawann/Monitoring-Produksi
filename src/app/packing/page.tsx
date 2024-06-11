@@ -1,7 +1,16 @@
 "use client";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Card, Loader, Alert, Title, Button, Modal, Text } from "@mantine/core";
+import {
+  Card,
+  Loader,
+  Alert,
+  Title,
+  Button,
+  Modal,
+  Text,
+  Container,
+} from "@mantine/core";
 import AddPackingModal from "../../components/modal/PackingModal";
 import { Packing } from "../../interfaces/packing";
 
@@ -68,7 +77,7 @@ const PackingPage = () => {
   };
 
   return (
-    <div className="container mx-auto py-8">
+    <Container className=" mx-auto py-8">
       <div className="flex justify-between mb-6 text-black">
         <Title order={1}>Packing List</Title>
         <Button onClick={openModal}>Tambah Packing</Button>
@@ -151,7 +160,7 @@ const PackingPage = () => {
           </Button>
         </div>
       </Modal>
-    </div>
+    </Container>
   );
 };
 

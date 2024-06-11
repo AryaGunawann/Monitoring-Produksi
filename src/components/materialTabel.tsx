@@ -26,8 +26,8 @@ const MaterialsTabel = () => {
 
   return (
     <div className="container mx-auto py-8">
-      <div className="mb-6 text-black">
-        <Title order={1}>Material</Title>
+      <div className="mb-2 text-black">
+        <Title order={3}>Material</Title>
       </div>
       {loading ? (
         <Loader />

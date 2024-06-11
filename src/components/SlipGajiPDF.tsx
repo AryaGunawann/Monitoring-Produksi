@@ -11,7 +11,6 @@ const SlipGaji = ({ pegawai, potongan, kasbon }) => {
 
   return (
     <div className="p-8 bg-gray-100 font-sans">
-      {/* Header */}
       <div className="flex justify-between mb-8">
         <h2 className="text-lg font-bold">PT. Tritek Indonesia</h2>
         <h2 className="text-lg font-bold">Slip Gaji Bulan {bulanIni}</h2>

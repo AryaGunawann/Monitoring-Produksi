@@ -1,7 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, Loader, Alert, Title, Button, Modal, Text } from "@mantine/core";
+import {
+  Card,
+  Loader,
+  Alert,
+  Title,
+  Button,
+  Modal,
+  Text,
+  Container,
+} from "@mantine/core";
 import AddProductModal from "../../components/modal/produkModal";
 import { Produk } from "../../interfaces/product";
 
@@ -110,8 +119,8 @@ const ProductsPage = () => {
   });
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="flex justify-between mb-6 text-black">
+    <Container className=" mx-auto py-8">
+      <section className="flex justify-between mb-6 text-black">
         <Title order={1}>Daftar Produk</Title>
         <Button onClick={openModal}>Buat Produk</Button>
         <AddProductModal
@@ -119,7 +128,7 @@ const ProductsPage = () => {
           onClose={closeModal}
           onProdukAdded={fetchData}
         />
-      </div>
+      </section>
       {loading ? (
         <Loader />
       ) : error ? (
@@ -137,7 +146,7 @@ const ProductsPage = () => {
                     Berat
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Jumlah Dibuat
+                    Jumlah
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Material Yang Digunakan
@@ -183,14 +192,12 @@ const ProductsPage = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <ul className="list-disc list-inside">
                           {p.material_pendukung.map((mp) => (
-                            <li key={mp.id}>
-                              {mp.nama} (Jumlah: {mp.jumlah})
-                            </li>
+                            <li key={mp.id}>{mp.nama}</li>
                           ))}
                         </ul>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {`${formattedDate} ${formattedTime}`}
+                        {`${formattedDate} (${formattedTime})`}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <Button
@@ -230,7 +237,7 @@ const ProductsPage = () => {
           </Button>
         </div>
       </Modal>
-    </div>
+    </Container>
   );
 };
 

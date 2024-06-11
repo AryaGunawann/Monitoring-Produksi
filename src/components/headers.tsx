@@ -5,8 +5,8 @@ import { FiChevronDown } from "react-icons/fi";
 
 const links = [
   { link: "/", label: "Dasbor" },
-  { link: "/products", label: "Product" },
   { link: "/materials", label: "Materials" },
+  { link: "/products", label: "Product" },
   { link: "/packing", label: "Packing" },
   { link: "/shipping", label: "Shipping" },
   { link: "/riwayat", label: "Riwayat" },
@@ -77,7 +77,7 @@ export function HeaderMenu() {
     <header className="mb-10 text-black shadow-lg">
       <Container size="md">
         <div className="h-14 flex justify-between items-center">
-          <div className="text-lg font-bold">PT.Tritek</div>
+          <div className="text-lg font-bold">Monitoring Produksi</div>
           <Group gap={5} visibleFrom="sm">
             {items}
           </Group>

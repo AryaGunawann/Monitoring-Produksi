@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Material } from "../../interfaces/material";
-import { Card, Loader, Alert, Title, Button } from "@mantine/core";
+import { Card, Loader, Alert, Title, Button, Container } from "@mantine/core";
 import AddMaterialModal from "../../components/modal/materialModal";
 
 const MaterialsPage = () => {
@@ -35,7 +35,7 @@ const MaterialsPage = () => {
   };
 
   return (
-    <div className="container mx-auto py-8">
+    <Container className=" mx-auto py-8">
       <div className="flex justify-between mb-6 text-black">
         <Title order={1}>Daftar Material</Title>
         <Button onClick={() => handleModalVisibility(true)}>
@@ -110,7 +110,7 @@ const MaterialsPage = () => {
           </div>
         </Card>
       )}
-    </div>
+    </Container>
   );
 };
 

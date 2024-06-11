@@ -5,7 +5,7 @@ const API_BASE_URL = "http://localhost:2000";
 
 export async function GET() {
   try {
-    const response = await axios.get(`${API_BASE_URL}/shipping`);
+    const response = await axios.get(`${API_BASE_URL}/totalpack`);
     return NextResponse.json(response.data);
   } catch (error) {
     return NextResponse.json(

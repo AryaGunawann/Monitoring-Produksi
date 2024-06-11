@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, Loader, Alert, Title, Button } from "@mantine/core";
+import { Card, Loader, Alert, Title, Button, Container } from "@mantine/core";
 import AddPegawaiModal from "../../components/modal/pegawaiModal";
 import Link from "next/link";
 
@@ -52,7 +52,7 @@ const PegawaiPage = () => {
   };
 
   return (
-    <div className="container mx-auto py-8">
+    <Container className="mx-auto py-8">
       <div className="flex justify-between mb-6 text-black">
         <Title order={1}>Daftar Pegawai</Title>
         <Button onClick={openModal}>Tambah Pegawai</Button>
@@ -108,7 +108,7 @@ const PegawaiPage = () => {
           </div>
         </Card>
       )}
-    </div>
+    </Container>
   );
 };
 
