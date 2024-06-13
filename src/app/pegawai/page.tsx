@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, Loader, Alert, Title, Button, Container } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import AddPegawaiModal from "../../components/modal/pegawaiModal";
 import Link from "next/link";
 
@@ -51,12 +52,48 @@ const PegawaiPage = () => {
     setIsModalOpen(false);
   };
 
+  const handleAddEmployee = (newEmployee: any) => {
+    setPegawaiList((prevList) => [...prevList, newEmployee]);
+    showNotification({
+      title: "Success",
+      message: "Pegawai berhasil ditambahkan",
+      color: "green",
+    });
+    closeModal();
+  };
+
+  const handleDeleteEmployee = async (id: number) => {
+    try {
+      await axios.delete(`/api/pegawai/${id}`);
+      setPegawaiList((prevList) =>
+        prevList.filter((pegawai) => pegawai.id !== id)
+      );
+      showNotification({
+        title: "Success",
+        message: "Pegawai berhasil dihapus",
+        color: "green",
+      });
+    } catch (error) {
+      console.error("Error deleting employee:", error);
+      setError("Error deleting employee: " + error);
+      showNotification({
+        title: "Error",
+        message: "Gagal menghapus pegawai",
+        color: "red",
+      });
+    }
+  };
+
   return (
     <Container className="mx-auto py-8">
       <div className="flex justify-between mb-6 text-black">
         <Title order={1}>Daftar Pegawai</Title>
         <Button onClick={openModal}>Tambah Pegawai</Button>
-        <AddPegawaiModal visible={isModalOpen} onClose={closeModal} />
+        <AddPegawaiModal
+          visible={isModalOpen}
+          onClose={closeModal}
+          onAdd={handleAddEmployee}
+        />
       </div>
       {loading ? (
         <Loader />
@@ -78,7 +115,7 @@ const PegawaiPage = () => {
                     Jabatan
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Detail
+                    Aksi
                   </th>
                 </tr>
               </thead>
@@ -94,12 +131,18 @@ const PegawaiPage = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {pegawai.Jabatan.nama_jabatan}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex space-x-2">
                       <Link href={`/pegawai/${pegawai.id}`} passHref>
                         <Button component="a" color="blue">
                           Detail
                         </Button>
                       </Link>
+                      <Button
+                        color="red"
+                        onClick={() => handleDeleteEmployee(pegawai.id)}
+                      >
+                        Hapus
+                      </Button>
                     </td>
                   </tr>
                 ))}

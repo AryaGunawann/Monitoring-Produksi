@@ -1,5 +1,5 @@
-import React, { useState, ChangeEvent, FormEvent } from "react";
-import { Modal, Input, Button, Group } from "@mantine/core";
+import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import { Modal, Button, Title, TextInput, Text } from "@mantine/core";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
@@ -13,6 +13,7 @@ interface Props {
 const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
   const [formData, setFormData] = useState({
     nama: "",
+    nik: "",
     email: "",
     tanggal_lahir: new Date(),
     tempat_lahir: "",
@@ -24,15 +25,32 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
     no_tlpn: "",
   });
 
+  useEffect(() => {
+    if (visible) {
+      setFormData({
+        nama: "",
+        nik: "",
+        email: "",
+        tanggal_lahir: new Date(),
+        tempat_lahir: "",
+        jenis_kelamin: "",
+        agama: "",
+        alamat: "",
+        tanggal_bergabung: new Date(),
+        jabatan_id: "",
+        no_tlpn: "",
+      });
+    }
+  }, [visible]);
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      await axios.post(`api/pegawai`, formData);
-      onAdd(formData); // Kirim data pegawai yang baru ditambahkan ke parent component
+      const response = await axios.post(`/api/pegawai`, formData);
+      onAdd(response.data); // Kirim data pegawai yang baru ditambahkan ke parent component
       onClose(); // Tutup modal setelah berhasil menambahkan pegawai
     } catch (error) {
       console.error("Error adding employee:", error);
-      // Tambahkan logika penanganan error jika diperlukan
     }
   };
 
@@ -54,10 +72,23 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
   };
 
   return (
-    <Modal opened={visible} onClose={onClose} title="Tambah Pegawai">
+    <Modal opened={visible} onClose={onClose}>
       <form onSubmit={handleSubmit} className="p-6">
+        <Title order={1} className="text-center mb-8 text-black">
+          Tambah Pegawai
+        </Title>
+
         <div className="grid grid-cols-1 gap-4">
-          <Input
+          <TextInput
+            id="NIK"
+            label="NIK"
+            placeholder="Masukkan NIK"
+            value={formData.nik}
+            name="nik"
+            onChange={handleChange}
+            required
+          />
+          <TextInput
             required
             label="Nama"
             placeholder="Masukkan nama lengkap"
@@ -65,7 +96,7 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
             name="nama"
             onChange={handleChange}
           />
-          <Input
+          <TextInput
             required
             label="Email"
             type="email"
@@ -74,7 +105,7 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
             name="email"
             onChange={handleChange}
           />
-          <Input
+          <TextInput
             required
             label="Tempat Lahir"
             placeholder="Masukkan tempat lahir"
@@ -82,7 +113,7 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
             name="tempat_lahir"
             onChange={handleChange}
           />
-          <Input
+          <TextInput
             required
             label="Jenis Kelamin"
             placeholder="Masukkan jenis kelamin"
@@ -90,7 +121,7 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
             name="jenis_kelamin"
             onChange={handleChange}
           />
-          <Input
+          <TextInput
             required
             label="Agama"
             placeholder="Masukkan agama"
@@ -98,7 +129,7 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
             name="agama"
             onChange={handleChange}
           />
-          <Input
+          <TextInput
             required
             label="Alamat"
             placeholder="Masukkan alamat lengkap"
@@ -106,21 +137,33 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
             name="alamat"
             onChange={handleChange}
           />
-          <DatePicker
-            required
-            selected={formData.tanggal_lahir}
-            onChange={(date) => handleDateChange(date, "tanggal_lahir")}
-            placeholderText="Pilih tanggal lahir"
-            className="w-full"
-          />
-          <DatePicker
-            required
-            selected={formData.tanggal_bergabung}
-            onChange={(date) => handleDateChange(date, "tanggal_bergabung")}
-            placeholderText="Pilih tanggal bergabung"
-            className="w-full"
-          />
-          <Input
+          <div>
+            <Text className="font-semibold text-sm py-2">
+              Tanggal Lahir<span className=" text-red-500">*</span>
+            </Text>
+            <DatePicker
+              required
+              selected={formData.tanggal_lahir}
+              onChange={(date) => handleDateChange(date, "tanggal_lahir")}
+              placeholderText="Pilih tanggal lahir"
+              className="w-full"
+              dateFormat="dd/MM/yyyy"
+            />
+          </div>
+          <div>
+            <Text className="font-semibold text-sm py-2">
+              Tanggal Bergabung<span className=" text-red-500">*</span>
+            </Text>
+            <DatePicker
+              required
+              selected={formData.tanggal_bergabung}
+              onChange={(date) => handleDateChange(date, "tanggal_bergabung")}
+              placeholderText="Pilih tanggal bergabung"
+              className="w-full"
+              dateFormat="dd/MM/yyyy"
+            />
+          </div>
+          <TextInput
             required
             label="ID Jabatan"
             type="number"
@@ -129,7 +172,7 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
             name="jabatan_id"
             onChange={handleChange}
           />
-          <Input
+          <TextInput
             required
             label="Nomor Telepon"
             placeholder="Masukkan nomor telepon"

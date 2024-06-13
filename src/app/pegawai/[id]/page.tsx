@@ -92,9 +92,11 @@ const PegawaiDetailPage = ({ params: { id } }) => {
           <Text>
             <strong>NIK:</strong> {pegawai.nik}
           </Text>
-          <Group spacing="xs" align="center">
-            <FaAt size={16} />
-            <Text>{pegawai.email}</Text>
+          <Group align="center">
+            <Text>
+              <strong>Email: </strong>
+              {pegawai.email}
+            </Text>
           </Group>
           <Text>
             <strong>Tempat Lahir:</strong> {pegawai.tempat_lahir}

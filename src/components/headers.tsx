@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Menu, Group, Center, Burger, Container } from "@mantine/core";
+import { Menu, Group, Container, Burger } from "@mantine/core";
 import { FiChevronDown } from "react-icons/fi";
 
 const links = [
@@ -9,7 +9,6 @@ const links = [
   { link: "/products", label: "Product" },
   { link: "/packing", label: "Packing" },
   { link: "/shipping", label: "Shipping" },
-  { link: "/riwayat", label: "Riwayat" },
 
   {
     link: "",
@@ -81,8 +80,23 @@ export function HeaderMenu() {
           <Group gap={5} visibleFrom="sm">
             {items}
           </Group>
-          <Burger opened={opened} onClick={toggle} size="sm" hiddenFrom="sm" />
+          {/* Burger menu */}
+          <Burger
+            opened={opened}
+            onClick={toggle}
+            size="sm"
+            hiddenFrom="sm"
+            aria-label="Toggle menu"
+          />
         </div>
+        {/* Menu items for small screens */}
+        {opened && (
+          <div className="mt-2 pb-3 border-t border-gray-200">
+            <Group direction="column" gap={3}>
+              {items}
+            </Group>
+          </div>
+        )}
       </Container>
     </header>
   );

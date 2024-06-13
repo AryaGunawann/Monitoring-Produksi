@@ -25,20 +25,6 @@ export async function getEmployeeByNik(nik) {
   }
 }
 
-// Mendapatkan employee berdasarkan ID
-export async function GET_id(req: NextRequest) {
-  try {
-    const { id } = req.params;
-    const response = await axios.get(`${API_BASE_URL}/employee/${id}`);
-    return NextResponse.json(response.data);
-  } catch (error) {
-    return NextResponse.json(
-      { message: "Error fetching employee by ID" },
-      { status: 500 }
-    );
-  }
-}
-
 // Menambahkan employee baru
 export async function POST(req: NextRequest) {
   try {
