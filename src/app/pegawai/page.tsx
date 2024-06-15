@@ -11,7 +11,7 @@ interface Jabatan {
   nama_jabatan: string;
   gapok: number;
   tunjangan: number;
-  uang_makan: number;
+  uang_makan: string;
   createdAt: string;
   updatedAt: string;
 }

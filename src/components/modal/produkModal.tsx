@@ -1,34 +1,34 @@
-// Import dependencies
 import { useState, useEffect } from "react";
-import { Button, Modal, TextInput, Title, Notification } from "@mantine/core";
 import axios from "axios";
-import { showNotification } from "@mantine/notifications";
+import { Material } from "../../interfaces/material";
+import { Modal, TextInput, Title, Button, Notification } from "@mantine/core";
 
-interface Material {
-  id: number;
-  nama: string;
-  satuan: string;
-  jumlah: number;
+interface MaterialPendukung {
+  materialId: number;
+  jumlah_material: number;
 }
 
-interface AddProdukModalProps {
+interface AddProductModalProps {
   visible: boolean;
   onClose: () => void;
   onProdukAdded: () => void;
+  showNotification: (
+    message: string,
+    color: "blue" | "red" | "yellow" | "green"
+  ) => void;
 }
 
-// Define the component
 const AddProductModal = ({
   visible,
   onClose,
   onProdukAdded,
-}: AddProdukModalProps) => {
-  // Define state variables
+  showNotification,
+}: AddProductModalProps) => {
   const [nama, setNama] = useState("");
   const [berat, setBerat] = useState("");
   const [jumlahTotal, setJumlahTotal] = useState("");
   const [materialPendukung, setMaterialPendukung] = useState<
-    { materialId: number; jumlah_material: number }[]
+    MaterialPendukung[]
   >([]);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(false);
@@ -50,22 +50,6 @@ const AddProductModal = ({
     try {
       setLoading(true);
 
-      // Check if a product with the same name already exists
-      const existingProductResponse = await axios.get(
-        `/api/produk?nama=${nama}`
-      );
-      if (existingProductResponse.data.length > 0) {
-        showNotification({
-          title: "Duplikasi Produk",
-          message:
-            "Produk dengan nama ini sudah ada. Silahkan Hapus Terlebih Dahulu",
-          color: "red",
-          autoClose: 5000,
-        });
-        setLoading(false);
-        return;
-      }
-
       const response = await axios.post("/api/produk", {
         nama,
         berat: parseInt(berat),
@@ -77,30 +61,18 @@ const AddProductModal = ({
       });
 
       if (response.status === 201 || response.status === 200) {
-        showNotification({
-          title: "Sukses",
-          message: "Produk berhasil ditambahkan!",
-          color: "green",
-          autoClose: 5000,
-        });
+        showNotification("Produk berhasil ditambahkan!", "green");
         onProdukAdded();
         onClose();
       }
     } catch (error) {
       console.error("Error adding produk:", error);
-      showNotification({
-        title: "Gagal",
-        message: "Gagal membuat Produk!",
-        color: "red",
-        autoClose: 5000,
-      });
+      showNotification("Gagal menambahkan produk!", "red");
     } finally {
       setLoading(false);
-      onClose();
     }
   };
 
-  // Handle adding new material
   const handleAddMaterial = () => {
     setMaterialPendukung((prevMaterials) => [
       ...prevMaterials,
@@ -110,7 +82,7 @@ const AddProductModal = ({
 
   const handleInputChange = (
     index: number,
-    field: keyof (typeof materialPendukung)[0],
+    field: keyof MaterialPendukung,
     value: string
   ) => {
     const newMaterials = [...materialPendukung];
@@ -192,14 +164,13 @@ const AddProductModal = ({
           </Button>
         </div>
         {error && (
-          <Notification color="red" className=" w-44">
+          <Notification color="red" className="absolute bottom-4 right-4">
             {error}
           </Notification>
-        )}{" "}
+        )}
       </div>
     </Modal>
   );
 };
 
-// Export the component
 export default AddProductModal;

@@ -3,7 +3,6 @@ import axios from "axios";
 
 const API_BASE_URL = "http://localhost:2000";
 
-// Mendapatkan daftar jabatan
 export async function GET() {
   try {
     const response = await axios.get(`${API_BASE_URL}/jabatan`);
@@ -16,7 +15,6 @@ export async function GET() {
   }
 }
 
-// Menambahkan jabatan baru
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();

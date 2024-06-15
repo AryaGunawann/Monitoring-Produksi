@@ -9,16 +9,25 @@ interface AddShippingModalProps {
   visible: boolean;
   onClose: () => void;
   onShippingAdded: () => void;
+  showNotification: (
+    message: string,
+    color: "blue" | "red" | "yellow" | "green"
+  ) => void;
 }
 
 const AddShippingModal = ({
   visible,
   onClose,
   onShippingAdded,
+  showNotification,
 }: AddShippingModalProps) => {
   const [jumlah, setJumlah] = useState<string>("");
   const [selectedProduct, setSelectedProduct] = useState<string>("");
   const [productList, setProductList] = useState<Product[]>([]);
+  const [notification, setNotification] = useState<{
+    message: string;
+    color: "blue" | "red" | "yellow" | "green";
+  } | null>(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -41,23 +50,17 @@ const AddShippingModal = ({
       });
 
       if (response.status === 201) {
-        showNotification({
-          title: "Berhasil",
-          message: "Produk berhasil dikirim!",
+        setNotification({
+          message: "Material berhasil ditambahkan!",
           color: "green",
-          autoClose: 5000,
         });
         onShippingAdded();
         onClose();
       }
     } catch (error) {
       console.error("Error adding shipping:", error);
-      showNotification({
-        title: "Gagal",
-        message: "Gagal melakukan pengiriman produk!",
-        color: "red",
-        autoClose: 5000,
-      });
+      setNotification({ message: "Gagal menambahkan material!", color: "red" });
+      showNotification("Gagal menambahkan material!", "red");
       onClose();
     }
   };

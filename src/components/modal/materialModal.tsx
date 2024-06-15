@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
-import { Button, Modal, TextInput, Title, Select } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
+import {
+  Button,
+  Modal,
+  TextInput,
+  Title,
+  Select,
+  Notification,
+} from "@mantine/core";
 import axios from "axios";
 import { Material } from "../../interfaces/material";
 
@@ -8,12 +14,17 @@ interface AddMaterialModalProps {
   visible: boolean;
   onClose: () => void;
   onMaterialAdded: () => void;
+  showNotification: (
+    message: string,
+    color: "blue" | "red" | "yellow" | "green"
+  ) => void;
 }
 
 const AddMaterialModal = ({
   visible,
   onClose,
   onMaterialAdded,
+  showNotification,
 }: AddMaterialModalProps) => {
   const [satuan, setSatuan] = useState<string>("");
   const [jumlah, setJumlah] = useState<string>("");
@@ -22,19 +33,25 @@ const AddMaterialModal = ({
   const [newMaterial, setNewMaterial] = useState<string>("");
   const [showNewMaterialInput, setShowNewMaterialInput] =
     useState<boolean>(false);
+  const [notification, setNotification] = useState<{
+    message: string;
+    color: "blue" | "red" | "yellow" | "green";
+  } | null>(null);
 
   useEffect(() => {
-    const fetchMaterials = async () => {
-      try {
-        const response = await axios.get<Material[]>("/api/materials");
-        setMaterialList(response.data);
-      } catch (error) {
-        console.error("Error fetching materials:", error);
-      }
-    };
-
-    fetchMaterials();
+    if (visible) {
+      fetchMaterials();
+    }
   }, [visible]);
+
+  const fetchMaterials = async () => {
+    try {
+      const response = await axios.get<Material[]>("/api/materials");
+      setMaterialList(response.data);
+    } catch (error) {
+      console.error("Error fetching materials:", error);
+    }
+  };
 
   const handleSubmit = async () => {
     try {
@@ -60,23 +77,18 @@ const AddMaterialModal = ({
       }
 
       if (response.status === 201 || response.status === 200) {
-        showNotification({
-          title: "Berhasil",
+        setNotification({
           message: "Material berhasil ditambahkan!",
           color: "green",
-          autoClose: 5000,
         });
         onMaterialAdded();
+        showNotification("Material berhasil ditambahkan!", "green");
         onClose();
       }
     } catch (error) {
       console.error("Error adding/updating material:", error);
-      showNotification({
-        title: "Gagal",
-        message: "Gagal menambahkan material!",
-        color: "red",
-        autoClose: 5000,
-      });
+      setNotification({ message: "Gagal menambahkan material!", color: "red" });
+      showNotification("Gagal menambahkan material!", "red");
     }
   };
 
@@ -101,6 +113,10 @@ const AddMaterialModal = ({
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setNewMaterial(event.currentTarget.value);
+  };
+
+  const handleNotificationClose = () => {
+    setNotification(null);
   };
 
   return (

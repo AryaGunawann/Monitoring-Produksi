@@ -1,31 +1,25 @@
-// Import dependencies
-import { useState, useEffect } from "react";
-import { Button, Modal, TextInput, Title, Notification } from "@mantine/core";
+import { useState } from "react";
+import { Button, Modal, TextInput, Title, Alert } from "@mantine/core";
 import axios from "axios";
 
-interface Jabatan {
-  id: number;
-  nama_jabatan: string;
-  gapok: number;
-  tunjangan: number;
-  uang_makan: number;
+interface AddJabatanModalProps {
+  visible: boolean;
+  onClose: () => void;
+  updateJabatanList: () => void;
 }
 
-// Define the component
 const AddJabatanModal = ({
   visible,
   onClose,
-}: {
-  visible: boolean;
-  onClose: () => void;
-}) => {
-  // Define state variables
+  updateJabatanList,
+}: AddJabatanModalProps) => {
   const [namaJabatan, setNamaJabatan] = useState("");
   const [gapok, setGapok] = useState("");
   const [tunjangan, setTunjangan] = useState("");
   const [uangMakan, setUangMakan] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleSubmit = async () => {
     try {
@@ -38,17 +32,20 @@ const AddJabatanModal = ({
       });
       if (response.status === 201) {
         onClose();
-        Notification.success({
-          title: "Success",
-          message: "Jabatan added successfully!",
-        });
+        setSuccessMessage("Jabatan berhasil ditambahkan.");
+        updateJabatanList(); // Panggil fungsi untuk memperbarui jabatanList di JabatanPage
       }
     } catch (error) {
       console.error("Error adding jabatan:", error);
-      setError("Failed to add jabatan. Please try again.");
+      setError("Gagal menambahkan jabatan. Silakan coba lagi.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAlertClose = () => {
+    setError(null);
+    setSuccessMessage(null);
   };
 
   return (
@@ -96,11 +93,19 @@ const AddJabatanModal = ({
             Batal
           </Button>
         </div>
-        {error && <Notification color="red">{error}</Notification>}
+        {error && (
+          <Alert color="red" className="mt-4" onClose={handleAlertClose}>
+            {error}
+          </Alert>
+        )}
+        {successMessage && (
+          <Alert color="blue" className="mt-4" onClose={handleAlertClose}>
+            {successMessage}
+          </Alert>
+        )}
       </div>
     </Modal>
   );
 };
 
-// Export the component
 export default AddJabatanModal;

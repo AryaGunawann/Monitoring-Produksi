@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Menu, Group, Container, Burger } from "@mantine/core";
 import { FiChevronDown } from "react-icons/fi";
+import Link from "next/link";
 
 const links = [
   { link: "/", label: "Dasbor" },
@@ -30,13 +31,13 @@ export function HeaderMenu() {
 
   const items = links.map((link) => {
     const menuItems = link.links?.map((item) => (
-      <a
+      <Link
         key={item.link}
         href={item.link}
         className="block px-3 py-2 rounded text-sm font-medium text-black hover:text-white hover:bg-black"
       >
         {item.label}
-      </a>
+      </Link>
     ));
 
     if (menuItems) {
@@ -48,13 +49,13 @@ export function HeaderMenu() {
           withinPortal
         >
           <Menu.Target>
-            <a
+            <Link
               href="#"
               className="flex items-center px-3 py-2 rounded text-sm font-medium text-black hover:text-white hover:bg-black"
             >
               <span className="mr-1">{link.label}</span>
               <FiChevronDown className="w-4 h-4" />
-            </a>
+            </Link>
           </Menu.Target>
           <Menu.Dropdown>{menuItems}</Menu.Dropdown>
         </Menu>
@@ -62,13 +63,13 @@ export function HeaderMenu() {
     }
 
     return (
-      <a
+      <Link
         key={link.label}
         href={link.link}
         className="block px-3 py-2 rounded text-sm font-medium text-black hover:text-white hover:bg-black"
       >
         {link.label}
-      </a>
+      </Link>
     );
   });
 
@@ -92,9 +93,7 @@ export function HeaderMenu() {
         {/* Menu items for small screens */}
         {opened && (
           <div className="mt-2 pb-3 border-t border-gray-200">
-            <Group direction="column" gap={3}>
-              {items}
-            </Group>
+            <Group gap={3}>{items}</Group>
           </div>
         )}
       </Container>

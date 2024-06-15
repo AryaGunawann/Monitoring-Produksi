@@ -10,8 +10,8 @@ import {
   Modal,
   Text,
   Container,
+  Notification,
 } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
 import AddShippingModal from "../../components/modal/ShippingModal";
 
 const ShippingPage = () => {
@@ -21,6 +21,10 @@ const ShippingPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedShipping, setSelectedShipping] = useState(null);
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
+  const [notification, setNotification] = useState<{
+    message: string;
+    color: "blue" | "red" | "yellow" | "green";
+  } | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -55,20 +59,13 @@ const ShippingPage = () => {
             item.id === shipping.id ? { ...item, status: "Dikirim" } : item
           )
         );
-        showNotification({
-          title: "Berhasil",
-          message: "Status pengiriman diperbarui menjadi Dikirim",
-          color: "green",
-          autoClose: 5000,
-        });
+        showNotification(
+          "Status pengiriman diperbarui menjadi Dikirim",
+          "green"
+        );
       } catch (error) {
         console.error("Error updating shipping status:", error);
-        showNotification({
-          title: "Gagal",
-          message: "Gagal memperbarui status pengiriman",
-          color: "red",
-          autoClose: 5000,
-        });
+        showNotification("Gagal memperbarui status pengiriman", "red");
       }
     } else {
       // Open confirmation modal
@@ -84,25 +81,26 @@ const ShippingPage = () => {
         setShippings((prevShippings) =>
           prevShippings.filter((item) => item.id !== selectedShipping.id)
         );
-        showNotification({
-          title: "Berhasil",
-          message: "Pengiriman berhasil dihapus!",
-          color: "green",
-          autoClose: 5000,
-        });
+        showNotification("Pengiriman berhasil dihapus!", "green");
       } catch (error) {
         console.error("Error deleting shipping:", error);
-        showNotification({
-          title: "Gagal",
-          message: "Gagal menghapus pengiriman!",
-          color: "red",
-          autoClose: 5000,
-        });
+        showNotification("Gagal menghapus pengiriman!", "red");
       } finally {
         setConfirmationModalOpen(false);
         setSelectedShipping(null);
       }
     }
+  };
+
+  const handleNotificationClose = () => {
+    setNotification(null);
+  };
+
+  const showNotification = (
+    message: string,
+    color: "blue" | "red" | "yellow" | "green"
+  ) => {
+    setNotification({ message, color });
   };
 
   return (
@@ -114,6 +112,7 @@ const ShippingPage = () => {
           visible={isModalOpen}
           onClose={closeModal}
           onShippingAdded={fetchData}
+          showNotification={showNotification}
         />
       </div>
       {loading ? (
@@ -191,6 +190,15 @@ const ShippingPage = () => {
           </Button>
         </div>
       </Modal>
+      {notification && (
+        <Notification
+          color={notification.color}
+          onClose={handleNotificationClose}
+          className="absolute bottom-4 right-4"
+        >
+          {notification.message}
+        </Notification>
+      )}
     </Container>
   );
 };
