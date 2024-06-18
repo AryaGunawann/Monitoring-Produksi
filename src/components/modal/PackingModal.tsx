@@ -25,12 +25,12 @@ const AddPackingModal = ({
   const [jumlah, setJumlah] = useState<string>("");
   const [selectedProduct, setSelectedProduct] = useState<string>("");
   const [productList, setProductList] = useState<Product[]>([]);
-  const [fetchError, setFetchError] = useState<string | null>(null); // Tambahkan state untuk menangani kesalahan saat pengambilan daftar produk
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get<Product[]>("/api/total");
+        const response = await axios.get<Product[]>("/api/produk");
         setProductList(response.data);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -44,7 +44,7 @@ const AddPackingModal = ({
   const handleSubmit = async () => {
     try {
       const response = await axios.post("/api/packing", {
-        nama: selectedProduct,
+        produkId: parseInt(selectedProduct),
         jumlah: parseInt(jumlah),
       });
 
@@ -77,18 +77,16 @@ const AddPackingModal = ({
           Tambah Packing
         </Title>
         <div className="space-y-4">
-          {fetchError ? ( // Tampilkan pesan kesalahan jika terjadi kesalahan saat pengambilan daftar produk
+          {fetchError ? (
             <div className="text-red-500">{fetchError}</div>
           ) : (
             <div>
               <label htmlFor="product">Pilih Produk:</label>
               <Select
                 id="product"
-                data={Array.from(
-                  new Set(productList.map((product) => product.nama))
-                ).map((nama) => ({
-                  value: nama,
-                  label: nama,
+                data={productList.map((product) => ({
+                  value: product.id.toString(),
+                  label: `${product.id} - ${product.nama} - Jumlah ${product.jumlah_total} `,
                 }))}
                 value={selectedProduct}
                 onChange={(value) => setSelectedProduct(value as string)}

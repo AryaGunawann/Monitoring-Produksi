@@ -1,9 +1,8 @@
-// components/modal/ShippingModal.js
 import { useState, useEffect } from "react";
 import { Button, Modal, TextInput, Title, Select } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
 import axios from "axios";
-import { Product } from "../../interfaces/product";
+import { Packing } from "../../interfaces/packing";
+import { showNotification } from "@mantine/notifications";
 
 interface AddShippingModalProps {
   visible: boolean;
@@ -22,46 +21,37 @@ const AddShippingModal = ({
   showNotification,
 }: AddShippingModalProps) => {
   const [jumlah, setJumlah] = useState<string>("");
-  const [selectedProduct, setSelectedProduct] = useState<string>("");
-  const [productList, setProductList] = useState<Product[]>([]);
-  const [notification, setNotification] = useState<{
-    message: string;
-    color: "blue" | "red" | "yellow" | "green";
-  } | null>(null);
+  const [selectedPacking, setSelectedPacking] = useState<string>("");
+  const [packingList, setPackingList] = useState<Packing[]>([]);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchPackings = async () => {
       try {
-        const response = await axios.get<Product[]>("/api/totalPacking");
-        setProductList(response.data);
+        const response = await axios.get<Packing[]>("/api/packing");
+        setPackingList(response.data);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("Error fetching packings:", error);
+        setFetchError("Error fetching packings");
       }
     };
 
-    fetchProducts();
+    fetchPackings();
   }, [visible]);
 
   const handleSubmit = async () => {
     try {
       const response = await axios.post("/api/shipping", {
-        nama: selectedProduct,
+        packingId: selectedPacking,
         jumlah: parseInt(jumlah),
       });
 
       if (response.status === 201) {
-        setNotification({
-          message: "Material berhasil ditambahkan!",
-          color: "green",
-        });
         onShippingAdded();
         onClose();
       }
     } catch (error) {
       console.error("Error adding shipping:", error);
-      setNotification({ message: "Gagal menambahkan material!", color: "red" });
-      showNotification("Gagal menambahkan material!", "red");
-      onClose();
     }
   };
 
@@ -72,21 +62,23 @@ const AddShippingModal = ({
           Tambah Pengiriman
         </Title>
         <div className="space-y-4">
-          <div>
-            <label htmlFor="product">Pilih Produk:</label>
-            <Select
-              id="product"
-              data={Array.from(
-                new Set(productList.map((product) => product.nama))
-              ).map((nama) => ({
-                value: nama,
-                label: nama,
-              }))}
-              value={selectedProduct}
-              onChange={(value) => setSelectedProduct(value as string)}
-              placeholder="Pilih Produk"
-            />
-          </div>
+          {fetchError ? (
+            <div className="text-red-500">{fetchError}</div>
+          ) : (
+            <div>
+              <label htmlFor="packing">Pilih Packing:</label>
+              <Select
+                id="packing"
+                data={packingList.map((packing) => ({
+                  value: packing.id.toString(),
+                  label: `${packing.id} - ${packing.Produk.nama} - Jumlah ${packing.jumlah} `,
+                }))}
+                value={selectedPacking}
+                onChange={(value) => setSelectedPacking(value as string)}
+                placeholder="Pilih Packing"
+              />
+            </div>
+          )}
           <TextInput
             id="jumlah"
             value={jumlah}

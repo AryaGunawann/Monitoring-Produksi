@@ -29,10 +29,7 @@ const PackingPage = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get("/api/packing");
-      const uniquePackings = Array.from(
-        new Set(response.data.map((packing) => packing.nama))
-      ).map((name) => response.data.find((packing) => packing.nama === name));
-      setPackings(uniquePackings);
+      setPackings(response.data);
     } catch (error) {
       setError("Error fetching packings: " + error);
     } finally {
@@ -62,10 +59,6 @@ const PackingPage = () => {
     if (packingToDelete) {
       try {
         await axios.delete(`/api/packing/${packingToDelete.id}`);
-        await axios.post("api/totalPacking/decrement", {
-          nama: packingToDelete.nama,
-          jumlah: packingToDelete.jumlah_total,
-        });
         fetchData();
         closeDeleteConfirmModal();
       } catch (error) {
@@ -98,6 +91,9 @@ const PackingPage = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    ID
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Nama
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -115,7 +111,10 @@ const PackingPage = () => {
                 {packings.map((packing) => (
                   <tr key={packing.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {packing.nama}
+                      {packing.id}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {packing.Produk?.nama || "nama tidak di temukan"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {packing.jumlah}

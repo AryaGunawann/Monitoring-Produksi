@@ -1,7 +1,7 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
-import { Modal, Button, Title, TextInput, Text } from "@mantine/core";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import React, { useState, useEffect } from "react";
+import { Modal, Button, Title, TextInput, Text, Select } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
+import "@mantine/dates/styles.css";
 import axios from "axios";
 
 interface Props {
@@ -15,15 +15,17 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
     nama: "",
     nik: "",
     email: "",
-    tanggal_lahir: new Date(),
+    tanggal_lahir: null as Date | null,
     tempat_lahir: "",
     jenis_kelamin: "",
     agama: "",
     alamat: "",
-    tanggal_bergabung: new Date(),
+    tanggal_bergabung: null as Date | null,
     jabatan_id: "",
     no_tlpn: "",
   });
+
+  const [jabatanList, setJabatanList] = useState<any[]>([]);
 
   useEffect(() => {
     if (visible) {
@@ -31,31 +33,51 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
         nama: "",
         nik: "",
         email: "",
-        tanggal_lahir: new Date(),
+        tanggal_lahir: null,
         tempat_lahir: "",
         jenis_kelamin: "",
         agama: "",
         alamat: "",
-        tanggal_bergabung: new Date(),
+        tanggal_bergabung: null,
         jabatan_id: "",
         no_tlpn: "",
       });
     }
   }, [visible]);
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    const fetchJabatan = async () => {
+      try {
+        const response = await axios.get(`/api/jabatan`);
+        console.log("Response data:", response.data);
+        if (Array.isArray(response.data.data)) {
+          setJabatanList(response.data.data);
+        } else {
+          console.error("Data received is not an array:", response.data);
+          setJabatanList([]);
+        }
+      } catch (error) {
+        console.error("Error fetching jabatan data:", error);
+        setJabatanList([]);
+      }
+    };
+
+    fetchJabatan();
+  }, []);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
       const response = await axios.post(`/api/pegawai`, formData);
-      onAdd(response.data); // Kirim data pegawai yang baru ditambahkan ke parent component
-      onClose(); // Tutup modal setelah berhasil menambahkan pegawai
+      onAdd(response.data);
+      onClose();
     } catch (error) {
       console.error("Error adding employee:", error);
     }
   };
 
   const handleChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = event.target;
     setFormData({
@@ -64,20 +86,23 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
     });
   };
 
-  const handleDateChange = (date: Date, name: string) => {
+  const handleSelectChange = (value: string, name: string) => {
     setFormData({
       ...formData,
-      [name]: date,
+      [name]: value,
+    });
+  };
+
+  const handleDateChange = (value: Date | null, name: string) => {
+    setFormData({
+      ...formData,
+      [name]: value,
     });
   };
 
   return (
-    <Modal opened={visible} onClose={onClose}>
+    <Modal opened={visible} onClose={onClose} title="Tambah Pegawai">
       <form onSubmit={handleSubmit} className="p-6">
-        <Title order={1} className="text-center mb-8 text-black">
-          Tambah Pegawai
-        </Title>
-
         <div className="grid grid-cols-1 gap-4">
           <TextInput
             id="NIK"
@@ -113,21 +138,31 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
             name="tempat_lahir"
             onChange={handleChange}
           />
-          <TextInput
+          <Select
             required
             label="Jenis Kelamin"
-            placeholder="Masukkan jenis kelamin"
+            placeholder="Pilih jenis kelamin"
+            data={[
+              { value: "Laki-Laki", label: "Laki-Laki" },
+              { value: "Perempuan", label: "Perempuan" },
+            ]}
             value={formData.jenis_kelamin}
-            name="jenis_kelamin"
-            onChange={handleChange}
+            onChange={(value) => handleSelectChange(value!, "jenis_kelamin")}
           />
-          <TextInput
+          <Select
             required
             label="Agama"
             placeholder="Masukkan agama"
-            value={formData.agama}
+            data={[
+              { value: "Islam", label: "Islam" },
+              { value: "Kristen", label: "Kristen" },
+              { value: "Katolik", label: "Katolik" },
+              { value: "Hindu", label: "Hindu" },
+              { value: "Buddha", label: "Buddha" },
+            ]}
             name="agama"
-            onChange={handleChange}
+            value={formData.agama}
+            onChange={(value) => handleSelectChange(value!, "agama")}
           />
           <TextInput
             required
@@ -137,40 +172,31 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
             name="alamat"
             onChange={handleChange}
           />
-          <div>
-            <Text className="font-semibold text-sm py-2">
-              Tanggal Lahir<span className=" text-red-500">*</span>
-            </Text>
-            <DatePicker
-              required
-              selected={formData.tanggal_lahir}
-              onChange={(date) => handleDateChange(date, "tanggal_lahir")}
-              placeholderText="Pilih tanggal lahir"
-              className="w-full"
-              dateFormat="dd/MM/yyyy"
-            />
-          </div>
-          <div>
-            <Text className="font-semibold text-sm py-2">
-              Tanggal Bergabung<span className=" text-red-500">*</span>
-            </Text>
-            <DatePicker
-              required
-              selected={formData.tanggal_bergabung}
-              onChange={(date) => handleDateChange(date, "tanggal_bergabung")}
-              placeholderText="Pilih tanggal bergabung"
-              className="w-full"
-              dateFormat="dd/MM/yyyy"
-            />
-          </div>
-          <TextInput
+
+          <DatePickerInput
+            className=""
+            label="Tanggal Lahir"
+            placeholder="Pilih tanggal lahir"
+            value={formData.tanggal_lahir}
+            onChange={(date) => handleDateChange(date, "tanggal_lahir")}
+          />
+          <DatePickerInput
+            className=""
+            label="Tanggal Bergabung"
+            placeholder="Pilih tanggal bergabung"
+            value={formData.tanggal_bergabung}
+            onChange={(date) => handleDateChange(date, "tanggal_bergabung")}
+          />
+          <Select
             required
             label="ID Jabatan"
-            type="number"
-            placeholder="Masukkan ID jabatan"
+            placeholder="Pilih jabatan"
+            data={jabatanList.map((jabatan) => ({
+              value: jabatan.id.toString(),
+              label: `${jabatan.id} - ${jabatan.nama_jabatan}`,
+            }))}
             value={formData.jabatan_id}
-            name="jabatan_id"
-            onChange={handleChange}
+            onChange={(value) => handleSelectChange(value!, "jabatan_id")}
           />
           <TextInput
             required
@@ -179,6 +205,7 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
             value={formData.no_tlpn}
             name="no_tlpn"
             onChange={handleChange}
+            type="number"
           />
         </div>
         <div className="mt-6 flex justify-center">
