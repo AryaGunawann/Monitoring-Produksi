@@ -10,20 +10,41 @@ import {
   Container,
   Notification,
 } from "@mantine/core";
-import AddShippingModal from "../../components/modal/ShippingModal";
+import AddShippingModal from "../../components/modal/shippingModal";
+
+// Interface definitions
+interface Shipping {
+  id: number;
+  Packing?: {
+    Produk?: {
+      nama: string;
+    };
+  };
+  jumlah: number;
+  status: string;
+  updatedAt: string;
+}
+
+interface NotificationType {
+  message: string;
+  color: "blue" | "red" | "yellow" | "green";
+  autoClose: boolean;
+}
 
 const ShippingPage = () => {
-  const [shippings, setShippings] = useState([]);
+  const [shippings, setShippings] = useState<Shipping[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedShipping, setSelectedShipping] = useState(null);
+  const [selectedShipping, setSelectedShipping] = useState<Shipping | null>(
+    null
+  );
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
-  const [notification, setNotification] = useState<{
-    message: string;
-    color: "blue" | "red" | "yellow" | "green";
-    autoClose: boolean;
-  } | null>(null);
+  const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] =
+    useState(false);
+  const [notification, setNotification] = useState<NotificationType | null>(
+    null
+  );
 
   useEffect(() => {
     fetchData();
@@ -49,21 +70,44 @@ const ShippingPage = () => {
     setIsModalOpen(false);
   };
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = async (confirmReceived: boolean) => {
     if (selectedShipping) {
       try {
-        await axios.delete(`/api/shipping/${selectedShipping.id}`);
-        setShippings((prevShippings) =>
-          prevShippings.filter((item) => item.id !== selectedShipping.id)
-        );
-        showNotification("Pengiriman berhasil dihapus!", "green", false);
+        if (confirmReceived) {
+          await axios.delete(`/api/shipping/${selectedShipping.id}`);
+          setShippings((prevShippings) =>
+            prevShippings.filter((item) => item.id !== selectedShipping.id)
+          );
+          showNotification("Pengiriman berhasil dihapus!", "green", false);
+        } else {
+          showNotification("Pengiriman tidak dihapus.", "blue", true);
+        }
       } catch (error) {
         console.error("Error deleting shipping:", error);
         showNotification("Gagal menghapus pengiriman!", "red", true);
       } finally {
-        setConfirmationModalOpen(false);
+        setDeleteConfirmationModalOpen(false);
         setSelectedShipping(null);
       }
+    }
+  };
+
+  const updateStatus = async (id: number, status: string) => {
+    try {
+      await axios.put(`/api/shipping/${id}/status`, { status });
+      setShippings((prevShippings) =>
+        prevShippings.map((shipping) =>
+          shipping.id === id ? { ...shipping, status } : shipping
+        )
+      );
+      showNotification(
+        `Status berhasil diubah menjadi ${status}!`,
+        "green",
+        false
+      );
+    } catch (error) {
+      console.error("Error updating status:", error);
+      showNotification("Gagal mengubah status!", "red", true);
     }
   };
 
@@ -107,6 +151,9 @@ const ShippingPage = () => {
                   Jumlah
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Updated At
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -127,19 +174,63 @@ const ShippingPage = () => {
                     {shipping.jumlah}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(shipping.updatedAt).toLocaleString()}
+                    {shipping.status}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <Button
-                      variant="outline"
-                      color="red"
-                      onClick={() => {
-                        setSelectedShipping(shipping);
-                        setConfirmationModalOpen(true);
-                      }}
-                    >
-                      Hapus
-                    </Button>
+                    {new Date(shipping.updatedAt).toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 space-x-2">
+                    {shipping.status === "Proses" && (
+                      <>
+                        <Button
+                          variant="outline"
+                          color="blue"
+                          onClick={() => updateStatus(shipping.id, "pending")}
+                        >
+                          Pending
+                        </Button>
+                        <Button
+                          variant="outline"
+                          color="blue"
+                          onClick={() => updateStatus(shipping.id, "dikirim")}
+                        >
+                          Dikirim
+                        </Button>
+                      </>
+                    )}
+                    {shipping.status === "pending" && (
+                      <>
+                        <Button
+                          variant="outline"
+                          color="blue"
+                          onClick={() => updateStatus(shipping.id, "dikirim")}
+                        >
+                          Dikirim
+                        </Button>
+                        <Button
+                          variant="outline"
+                          color="red"
+                          onClick={() => {
+                            setSelectedShipping(shipping);
+                            setDeleteConfirmationModalOpen(true);
+                          }}
+                        >
+                          Hapus
+                        </Button>
+                      </>
+                    )}
+                    {shipping.status === "dikirim" && (
+                      <Button
+                        variant="outline"
+                        color="red"
+                        onClick={() => {
+                          setSelectedShipping(shipping);
+                          setDeleteConfirmationModalOpen(true);
+                        }}
+                      >
+                        Hapus
+                      </Button>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -153,7 +244,7 @@ const ShippingPage = () => {
         onClose={() => setConfirmationModalOpen(false)}
         title="Konfirmasi Penghapusan"
       >
-        <Text>Apakah pengiriman ini sudah selesai?</Text>
+        <Text>Apakah barang ini sudah diterima oleh penerima?</Text>
         <div className="flex justify-end mt-4 space-x-4">
           <Button
             variant="outline"
@@ -161,7 +252,29 @@ const ShippingPage = () => {
           >
             Batal
           </Button>
-          <Button color="red" onClick={handleConfirmDelete}>
+          <Button color="blue" onClick={() => handleConfirmDelete(true)}>
+            Ya
+          </Button>
+          <Button color="red" onClick={() => handleConfirmDelete(false)}>
+            Tidak
+          </Button>
+        </div>
+      </Modal>
+
+      <Modal
+        opened={deleteConfirmationModalOpen}
+        onClose={() => setDeleteConfirmationModalOpen(false)}
+        title="Konfirmasi Penghapusan"
+      >
+        <Text>Apakah Anda yakin ingin menghapus pengiriman ini?</Text>
+        <div className="flex justify-end mt-4 space-x-4">
+          <Button
+            variant="outline"
+            onClick={() => setDeleteConfirmationModalOpen(false)}
+          >
+            Batal
+          </Button>
+          <Button color="red" onClick={() => setConfirmationModalOpen(true)}>
             Hapus
           </Button>
         </div>

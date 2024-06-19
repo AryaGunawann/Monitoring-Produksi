@@ -1,5 +1,5 @@
-import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
+import axios from "axios";
 
 const API_BASE_URL = "http://localhost:2000";
 
@@ -7,24 +7,24 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const { id } = params;
+
   try {
-    const { id } = params;
-
     const response = await axios.get(`${API_BASE_URL}/shipping/${id}`);
-
-    return NextResponse.json(response.data);
+    return NextResponse.json(response.data, { status: 200 });
   } catch (error) {
-    console.error(
-      "Error saat mengambil data pengiriman berdasarkan ID:",
-      error
-    );
-
     return NextResponse.json(
-      { message: "Error saat mengambil data Pengiriman berdasarkan ID" },
+      { message: "Error fetching shipping data" },
       { status: 500 }
     );
   }
 }
+
+export const config = {
+  api: {
+    bodyParser: false, // We don't need a body parser for GET requests
+  },
+};
 
 export async function DELETE(
   req: NextRequest,
