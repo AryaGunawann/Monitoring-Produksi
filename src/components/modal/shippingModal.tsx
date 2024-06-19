@@ -2,28 +2,23 @@ import { useState, useEffect } from "react";
 import { Button, Modal, TextInput, Title, Select } from "@mantine/core";
 import axios from "axios";
 import { Packing } from "../../interfaces/packing";
-import { showNotification } from "@mantine/notifications";
 
 interface AddShippingModalProps {
   visible: boolean;
   onClose: () => void;
   onShippingAdded: () => void;
-  showNotification: (
-    message: string,
-    color: "blue" | "red" | "yellow" | "green"
-  ) => void;
 }
 
 const AddShippingModal = ({
   visible,
   onClose,
   onShippingAdded,
-  showNotification,
 }: AddShippingModalProps) => {
   const [jumlah, setJumlah] = useState<string>("");
   const [selectedPacking, setSelectedPacking] = useState<string>("");
   const [packingList, setPackingList] = useState<Packing[]>([]);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [maxPackingAllowed, setMaxPackingAllowed] = useState<number>(0);
 
   useEffect(() => {
     const fetchPackings = async () => {
@@ -39,6 +34,17 @@ const AddShippingModal = ({
     fetchPackings();
   }, [visible]);
 
+  useEffect(() => {
+    if (selectedPacking) {
+      const packing = packingList.find(
+        (packing) => packing.id.toString() === selectedPacking
+      );
+      if (packing) {
+        setMaxPackingAllowed(packing.jumlah);
+      }
+    }
+  }, [selectedPacking, packingList]);
+
   const handleSubmit = async () => {
     try {
       const response = await axios.post("/api/shipping", {
@@ -53,6 +59,12 @@ const AddShippingModal = ({
     } catch (error) {
       console.error("Error adding shipping:", error);
     }
+  };
+
+  const isJumlahValid = () => {
+    if (!jumlah || !selectedPacking) return false;
+    const parsedJumlah = parseInt(jumlah);
+    return parsedJumlah > 0 && parsedJumlah <= maxPackingAllowed;
   };
 
   return (
@@ -88,12 +100,20 @@ const AddShippingModal = ({
             type="number"
             required
           />
+          {!isJumlahValid() && (
+            <div className="text-red-500 text-sm">
+              Jumlah packing harus lebih dari 0 dan tidak boleh melebihi jumlah
+              total produk ({maxPackingAllowed}).
+            </div>
+          )}
         </div>
         <div className="flex justify-end mt-8 space-x-4">
           <Button onClick={onClose} variant="light">
             Batal
           </Button>
-          <Button onClick={handleSubmit}>Tambah Pengiriman</Button>
+          <Button onClick={handleSubmit} disabled={!isJumlahValid()}>
+            Tambah Pengiriman
+          </Button>
         </div>
       </div>
     </Modal>

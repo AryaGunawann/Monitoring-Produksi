@@ -7,7 +7,6 @@ import {
   Select,
   Container,
 } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
 import axios from "axios";
 import { Product } from "../../interfaces/product";
 
@@ -15,17 +14,44 @@ interface AddPackingModalProps {
   visible: boolean;
   onClose: () => void;
   onPackingAdded: () => void;
+  showNotification: (
+    message: string,
+    color: "blue" | "red" | "yellow" | "green"
+  ) => void;
 }
 
 const AddPackingModal = ({
   visible,
   onClose,
   onPackingAdded,
+  showNotification,
 }: AddPackingModalProps) => {
   const [jumlah, setJumlah] = useState<string>("");
   const [selectedProduct, setSelectedProduct] = useState<string>("");
   const [productList, setProductList] = useState<Product[]>([]);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [maxPackingAllowed, setMaxPackingAllowed] = useState<number>(0);
+
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post("/api/packing", {
+        produkId: parseInt(selectedProduct),
+        jumlah: parseInt(jumlah),
+      });
+      if (response.status === 201 || response.status === 200) {
+        showNotification("Material berhasil ditambahkan!", "green");
+        onPackingAdded();
+        onClose();
+      } else {
+        showNotification("Gagal menambahkan material!", "red");
+        onClose();
+      }
+    } catch (error) {
+      console.error("Error adding/updating material:", error);
+      showNotification("Gagal menambahkan material!", "red");
+      onClose();
+    }
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -38,36 +64,26 @@ const AddPackingModal = ({
       }
     };
 
-    fetchProducts();
+    if (visible) {
+      fetchProducts();
+    }
   }, [visible]);
 
-  const handleSubmit = async () => {
-    try {
-      const response = await axios.post("/api/packing", {
-        produkId: parseInt(selectedProduct),
-        jumlah: parseInt(jumlah),
-      });
-
-      if (response.status === 201) {
-        showNotification({
-          title: "Berhasil",
-          message: "Produk berhasil dikemas!",
-          color: "green",
-          autoClose: 5000,
-        });
-        onPackingAdded();
-        onClose();
+  useEffect(() => {
+    if (selectedProduct) {
+      const product = productList.find(
+        (prod) => prod.id.toString() === selectedProduct
+      );
+      if (product) {
+        setMaxPackingAllowed(product.jumlah_total);
       }
-    } catch (error) {
-      console.error("Error adding packing:", error);
-      showNotification({
-        title: "Gagal",
-        message: "Gagal melakukan pengemasan produk!",
-        color: "red",
-        autoClose: 5000,
-      });
-      onClose();
     }
+  }, [selectedProduct, productList]);
+
+  const isJumlahValid = () => {
+    if (!jumlah || !selectedProduct) return false;
+    const parsedJumlah = parseInt(jumlah);
+    return parsedJumlah > 0 && parsedJumlah <= maxPackingAllowed;
   };
 
   return (
@@ -86,7 +102,7 @@ const AddPackingModal = ({
                 id="product"
                 data={productList.map((product) => ({
                   value: product.id.toString(),
-                  label: `${product.id} - ${product.nama} - Jumlah ${product.jumlah_total} `,
+                  label: `${product.id} - ${product.nama} - Jumlah ${product.jumlah_total}`,
                 }))}
                 value={selectedProduct}
                 onChange={(value) => setSelectedProduct(value as string)}
@@ -103,12 +119,20 @@ const AddPackingModal = ({
             type="number"
             required
           />
+          {!isJumlahValid() && (
+            <div className="text-red-500 text-sm">
+              Jumlah packing harus lebih dari 0 dan tidak boleh melebihi jumlah
+              total produk ({maxPackingAllowed}).
+            </div>
+          )}
         </div>
         <div className="flex justify-end mt-8 space-x-4">
           <Button onClick={onClose} variant="light">
             Batal
           </Button>
-          <Button onClick={handleSubmit}>Tambah Packing</Button>
+          <Button onClick={handleSubmit} disabled={!isJumlahValid()}>
+            Tambah Packing
+          </Button>
         </div>
       </div>
     </Modal>

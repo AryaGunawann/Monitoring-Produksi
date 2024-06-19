@@ -21,19 +21,29 @@ const AddJabatanModal = ({
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  const isFormValid = () => {
+    return (
+      parseInt(gapok) >= 0 &&
+      parseInt(tunjangan) >= 0 &&
+      parseInt(uangMakan) >= 0
+    );
+  };
+
   const handleSubmit = async () => {
     try {
       setLoading(true);
+
       const response = await axios.post("/api/jabatan", {
         nama_jabatan: namaJabatan,
         gapok: parseInt(gapok),
         tunjangan: parseInt(tunjangan),
         uang_makan: parseInt(uangMakan),
       });
+
       if (response.status === 201) {
         onClose();
         setSuccessMessage("Jabatan berhasil ditambahkan.");
-        updateJabatanList(); // Panggil fungsi untuk memperbarui jabatanList di JabatanPage
+        updateJabatanList();
       }
     } catch (error) {
       console.error("Error adding jabatan:", error);
@@ -86,7 +96,11 @@ const AddJabatanModal = ({
           required
         />
         <div className="mt-4">
-          <Button onClick={handleSubmit} loading={loading}>
+          <Button
+            onClick={handleSubmit}
+            disabled={!isFormValid()}
+            loading={loading}
+          >
             Simpan
           </Button>
           <Button onClick={onClose} variant="light" className="ml-2">

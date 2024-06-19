@@ -3,7 +3,7 @@ export interface MaterialPendukung {
   jumlah_material: number;
 }
 
-export interface Produk {
+export interface Product {
   id: number;
   nama: string;
   berat: number;

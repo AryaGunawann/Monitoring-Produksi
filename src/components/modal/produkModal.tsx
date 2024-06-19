@@ -33,6 +33,7 @@ const AddProductModal = ({
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [disableSimpan, setDisableSimpan] = useState(true); // State untuk menonaktifkan tombol Simpan
 
   useEffect(() => {
     const fetchMaterials = async () => {
@@ -45,6 +46,29 @@ const AddProductModal = ({
     };
     fetchMaterials();
   }, []);
+
+  useEffect(() => {
+    // Logika untuk memeriksa apakah form valid
+    const isValid = () => {
+      if (!nama || !berat || !jumlahTotal) return false;
+      if (
+        materialPendukung.some(
+          (mp) => mp.materialId === 0 || mp.jumlah_material === 0
+        )
+      )
+        return false;
+      // Periksa apakah jumlah_material melebihi stok material
+      for (const mp of materialPendukung) {
+        const material = materials.find((m) => m.id === mp.materialId);
+        if (material && mp.jumlah_material > material.jumlah) {
+          return false;
+        }
+      }
+      return true;
+    };
+
+    setDisableSimpan(!isValid()); // Update state disableSimpan berdasarkan validitas form
+  }, [nama, berat, jumlahTotal, materialPendukung, materials]);
 
   const handleSubmit = async () => {
     try {
@@ -132,7 +156,7 @@ const AddProductModal = ({
                 <option value="">Pilih Material</option>
                 {materials.map((material) => (
                   <option key={material.id} value={material.id}>
-                    {material.nama}
+                    {material.nama} - {material.jumlah}
                   </option>
                 ))}
               </select>
@@ -156,7 +180,11 @@ const AddProductModal = ({
         </div>
         <Button onClick={handleAddMaterial}>Tambah Material</Button>
         <div className="mt-4">
-          <Button onClick={handleSubmit} loading={loading}>
+          <Button
+            onClick={handleSubmit}
+            loading={loading}
+            disabled={disableSimpan}
+          >
             Simpan
           </Button>
           <Button onClick={onClose} variant="light" className="ml-2">

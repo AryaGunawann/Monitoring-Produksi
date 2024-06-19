@@ -14,7 +14,6 @@ import {
   Stack,
   Badge,
 } from "@mantine/core";
-import { FaAt, FaPhone, FaBriefcase, FaMapMarkerAlt } from "react-icons/fa";
 
 interface Jabatan {
   id: number;
@@ -79,11 +78,6 @@ const PegawaiDetailPage = ({ params: { id } }) => {
         withBorder
         className="p-6 rounded-lg shadow-md"
       >
-        <Group position="center" mb="lg">
-          <Avatar size={120} radius={120} color="blue">
-            {pegawai.nama[0]}
-          </Avatar>
-        </Group>
         <Title order={2} align="center" mb="lg">
           {pegawai.nama}
         </Title>
@@ -111,21 +105,20 @@ const PegawaiDetailPage = ({ params: { id } }) => {
             <strong>Agama:</strong> {pegawai.agama}
           </Text>
           <Group spacing="xs" align="center">
-            <FaMapMarkerAlt size={16} />
+            <strong>Alamat:</strong>
             <Text>{pegawai.alamat}</Text>
           </Group>
           <Text>
             <strong>Tanggal Bergabung:</strong> {pegawai.tanggal_bergabung}
           </Text>
           <Group spacing="xs" align="center">
-            <FaPhone size={16} />
+            <strong>No telepon</strong>
             <Text>{pegawai.no_tlpn}</Text>
           </Group>
           <Divider my="sm" />
           {pegawai.Jabatan ? (
             <>
               <Group spacing="xs" align="center">
-                <FaBriefcase size={16} />
                 <Text>
                   <strong>Jabatan:</strong> {pegawai.Jabatan.nama_jabatan}
                 </Text>

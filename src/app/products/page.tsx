@@ -9,22 +9,25 @@ import {
   Text,
   Container,
   Notification,
+  Pagination,
 } from "@mantine/core";
 import AddProductModal from "../../components/modal/produkModal";
-import { Produk } from "../../interfaces/product";
+import { Product } from "../../interfaces/product";
 
 const ProductsPage = () => {
-  const [produk, setProduk] = useState<Produk[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [produk, setProduk] = useState<Product[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteConfirmModal, setDeleteConfirmModal] = useState(false);
-  const [productToDelete, setProductToDelete] = useState<Produk | null>(null);
-  const [latestNewProduct, setLatestNewProduct] = useState<Produk | null>(null);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [latestNewProduct, setLatestNewProduct] = useState<Product | null>(
+    null
+  );
   const [notification, setNotification] = useState<{
     message: string;
     color: "blue" | "red" | "yellow" | "green";
   } | null>(null);
+  const [activePage, setActivePage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchData();
@@ -36,9 +39,7 @@ const ProductsPage = () => {
       setProduk(response.data);
       identifyLatestNewProduct(response.data);
     } catch (error) {
-      setError("Error fetching produk: " + error);
-    } finally {
-      setLoading(false);
+      console.error("Error fetching produk: " + error);
     }
   };
 
@@ -50,7 +51,7 @@ const ProductsPage = () => {
     setIsModalOpen(false);
   };
 
-  const openDeleteConfirmModal = (product: Produk) => {
+  const openDeleteConfirmModal = (product: Product) => {
     setProductToDelete(product);
     setDeleteConfirmModal(true);
   };
@@ -64,15 +65,10 @@ const ProductsPage = () => {
     if (productToDelete) {
       try {
         await axios.delete(`/api/produk/tambah/${productToDelete.id}`);
-        await axios.post("/api/total/decrement", {
-          nama: productToDelete.nama,
-          jumlah: productToDelete.jumlah_total,
-        });
         fetchData();
         closeDeleteConfirmModal();
       } catch (error) {
         console.error("Error deleting product:", error);
-        setError("Error deleting product");
         closeDeleteConfirmModal();
       }
     }
@@ -87,8 +83,8 @@ const ProductsPage = () => {
     return differenceInDays <= 7;
   };
 
-  const identifyLatestNewProduct = (products: Produk[]): void => {
-    const latestNewProductMap: Record<string, Produk> = {};
+  const identifyLatestNewProduct = (products: Product[]): void => {
+    const latestNewProductMap: Record<string, Product> = {};
 
     products.forEach((product) => {
       if (!latestNewProductMap[product.nama]) {
@@ -101,7 +97,7 @@ const ProductsPage = () => {
       }
     });
 
-    let latestNew: Produk | null = null;
+    let latestNew: Product | null = null;
     Object.values(latestNewProductMap).forEach((product) => {
       if (isNewProduct(product.createdAt)) {
         if (
@@ -131,11 +127,18 @@ const ProductsPage = () => {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
+  // Pagination logic
+  const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
+  const displayedProducts = sortedProducts.slice(
+    (activePage - 1) * itemsPerPage,
+    activePage * itemsPerPage
+  );
+
   return (
-    <Container className=" mx-auto py-8">
+    <Container className="mx-auto py-8">
       <section className="flex justify-between mb-6 text-black">
-        <Title order={1}>Daftar Produk</Title>
-        <Button onClick={openModal}>Buat Produk</Button>
+        <Title order={1}>Product List</Title>
+        <Button onClick={openModal}>Buat Product</Button>
         <AddProductModal
           visible={isModalOpen}
           onClose={closeModal}
@@ -149,7 +152,7 @@ const ProductsPage = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Nama Produk
+                  ID | Nama Product
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Berat
@@ -163,13 +166,11 @@ const ProductsPage = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Update
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Delete
-                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {sortedProducts.map((p: Produk) => {
+              {displayedProducts.map((p: Product) => {
                 const updatedAt = new Date(p.createdAt);
                 const formattedDate = updatedAt.toLocaleDateString("id-ID", {
                   year: "numeric",
@@ -184,7 +185,7 @@ const ProductsPage = () => {
                 return (
                   <tr key={p.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {p.nama}
+                      {p.id} - {p.nama}
                       {latestNewProduct && latestNewProduct.nama === p.nama && (
                         <span className="inline-block bg-green-500 text-white text-xs uppercase font-semibold px-2 py-1 rounded-md ml-2">
                           NEW
@@ -224,6 +225,14 @@ const ProductsPage = () => {
           </table>
         </div>
       </Card>
+      {produk.length > itemsPerPage && (
+        <Pagination
+          page={activePage}
+          onChange={setActivePage}
+          total={totalPages}
+          className="mt-4"
+        />
+      )}
       <Modal
         opened={deleteConfirmModal}
         onClose={closeDeleteConfirmModal}

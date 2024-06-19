@@ -8,9 +8,18 @@ interface Props {
   visible: boolean;
   onClose: () => void;
   onAdd: (data: any) => void;
+  showNotification: (
+    message: string,
+    color: "blue" | "red" | "yellow" | "green"
+  ) => void;
 }
 
-const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
+const TambahPegawaiModal: React.FC<Props> = ({
+  visible,
+  onClose,
+  onAdd,
+  showNotification,
+}) => {
   const [formData, setFormData] = useState({
     nama: "",
     nik: "",
@@ -26,6 +35,7 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
   });
 
   const [jabatanList, setJabatanList] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (visible) {
@@ -49,7 +59,6 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
     const fetchJabatan = async () => {
       try {
         const response = await axios.get(`/api/jabatan`);
-        console.log("Response data:", response.data);
         if (Array.isArray(response.data.data)) {
           setJabatanList(response.data.data);
         } else {
@@ -69,10 +78,16 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
     event.preventDefault();
     try {
       const response = await axios.post(`/api/pegawai`, formData);
-      onAdd(response.data);
-      onClose();
+      if (response && (response.status === 201 || response.status === 200)) {
+        onAdd(response.data);
+        showNotification("Pegawai berhasil ditambahkan!", "green");
+        onClose();
+      } else {
+        setError("Gagal menambahkan pegawai. Status respons tidak valid.");
+      }
     } catch (error) {
       console.error("Error adding employee:", error);
+      setError("Gagal menambahkan pegawai. Silakan coba lagi.");
     }
   };
 
@@ -112,6 +127,7 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
             name="nik"
             onChange={handleChange}
             required
+            type="number"
           />
           <TextInput
             required
@@ -205,7 +221,7 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
             value={formData.no_tlpn}
             name="no_tlpn"
             onChange={handleChange}
-            type="number"
+            type="tel"
           />
         </div>
         <div className="mt-6 flex justify-center">
@@ -216,6 +232,11 @@ const TambahPegawaiModal: React.FC<Props> = ({ visible, onClose, onAdd }) => {
             Batal
           </Button>
         </div>
+        {error && (
+          <Text color="red" className="mt-4 text-center">
+            {error}
+          </Text>
+        )}
       </form>
     </Modal>
   );

@@ -10,17 +10,33 @@ import {
   Modal,
   Text,
   Container,
+  Notification,
+  Pagination,
 } from "@mantine/core";
 import AddPackingModal from "../../components/modal/PackingModal";
-import { Packing } from "../../interfaces/packing";
+
+interface IPacking {
+  id: number;
+  Produk: {
+    nama: string;
+  } | null;
+  jumlah: number;
+  updatedAt: string;
+}
 
 const PackingPage = () => {
-  const [packings, setPackings] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [deleteConfirmModal, setDeleteConfirmModal] = useState(false);
-  const [packingToDelete, setPackingToDelete] = useState(null);
+  const [packings, setPackings] = useState<IPacking[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [deleteConfirmModal, setDeleteConfirmModal] = useState<boolean>(false);
+  const [packingToDelete, setPackingToDelete] = useState<IPacking | null>(null);
+  const [notification, setNotification] = useState<{
+    message: string;
+    color: "blue" | "red" | "yellow" | "green";
+  } | null>(null);
+  const [activePage, setActivePage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchData();
@@ -28,7 +44,7 @@ const PackingPage = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("/api/packing");
+      const response = await axios.get<IPacking[]>("/api/packing");
       setPackings(response.data);
     } catch (error) {
       setError("Error fetching packings: " + error);
@@ -45,7 +61,7 @@ const PackingPage = () => {
     setIsModalOpen(false);
   };
 
-  const openDeleteConfirmModal = (packing) => {
+  const openDeleteConfirmModal = (packing: IPacking) => {
     setPackingToDelete(packing);
     setDeleteConfirmModal(true);
   };
@@ -60,17 +76,37 @@ const PackingPage = () => {
       try {
         await axios.delete(`/api/packing/${packingToDelete.id}`);
         fetchData();
+        showNotification("Packing berhasil dihapus!", "green");
         closeDeleteConfirmModal();
       } catch (error) {
         console.error("Error deleting packing:", error);
-        setError("Error");
+        setError("Error deleting packing");
+        showNotification("Gagal menghapus packing!", "red");
         closeDeleteConfirmModal();
       }
     }
   };
 
+  const handleNotificationClose = () => {
+    setNotification(null);
+  };
+
+  const showNotification = (
+    message: string,
+    color: "blue" | "red" | "yellow" | "green"
+  ) => {
+    setNotification({ message, color });
+  };
+
+  // Pagination logic
+  const totalPages = Math.ceil(packings.length / itemsPerPage);
+  const displayedPackings = packings.slice(
+    (activePage - 1) * itemsPerPage,
+    activePage * itemsPerPage
+  );
+
   return (
-    <Container className=" mx-auto py-8">
+    <Container className="mx-auto py-8">
       <div className="flex justify-between mb-6 text-black">
         <Title order={1}>Packing List</Title>
         <Button onClick={openModal}>Tambah Packing</Button>
@@ -78,6 +114,7 @@ const PackingPage = () => {
           visible={isModalOpen}
           onClose={closeModal}
           onPackingAdded={fetchData}
+          showNotification={showNotification}
         />
       </div>
       {loading ? (
@@ -91,10 +128,10 @@ const PackingPage = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    ID
+                    No.
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nama
+                    ID | Nama
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Jumlah
@@ -102,19 +139,18 @@ const PackingPage = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Updated At
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Delete
-                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {packings.map((packing) => (
+                {displayedPackings.map((packing, index) => (
                   <tr key={packing.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {packing.id}
+                      {index + 1 + (activePage - 1) * itemsPerPage}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {packing.Produk?.nama || "nama tidak di temukan"}
+                      {packing.id} -{" "}
+                      {packing.Produk?.nama || "nama tidak ditemukan"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {packing.jumlah}
@@ -139,7 +175,23 @@ const PackingPage = () => {
           </div>
         </Card>
       )}
-
+      {packings.length > itemsPerPage && (
+        <Pagination
+          page={activePage}
+          onChange={setActivePage}
+          total={totalPages}
+          className="mt-4"
+        />
+      )}
+      {notification && (
+        <Notification
+          color={notification.color}
+          onClose={handleNotificationClose}
+          className="absolute bottom-4 right-4"
+        >
+          {notification.message}
+        </Notification>
+      )}
       <Modal
         opened={deleteConfirmModal}
         onClose={closeDeleteConfirmModal}

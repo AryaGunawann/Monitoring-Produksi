@@ -12,7 +12,7 @@ const ProductsPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/api/total");
+        const response = await axios.get("/api/produk");
         const fetchedTotal = response.data;
 
         setProduk(fetchedTotal);
@@ -42,9 +42,11 @@ const ProductsPage = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    No.
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Nama Produk
                   </th>
-
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Jumlah Dibuat
                   </th>
@@ -54,7 +56,7 @@ const ProductsPage = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {produk.map((p) => {
+                {produk.map((p, index) => {
                   const updatedAt = new Date(p.updatedAt);
 
                   const formattedDate = updatedAt.toLocaleDateString("id-ID", {
@@ -71,6 +73,9 @@ const ProductsPage = () => {
 
                   return (
                     <tr key={p.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {index + 1}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {p.nama}
                       </td>

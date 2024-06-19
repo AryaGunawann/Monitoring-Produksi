@@ -33,6 +33,7 @@ const AddMaterialModal = ({
   const [newMaterial, setNewMaterial] = useState<string>("");
   const [showNewMaterialInput, setShowNewMaterialInput] =
     useState<boolean>(false);
+  const [isDuplicate, setIsDuplicate] = useState<boolean>(false);
   const [notification, setNotification] = useState<{
     message: string;
     color: "blue" | "red" | "yellow" | "green";
@@ -57,26 +58,27 @@ const AddMaterialModal = ({
     try {
       let response;
 
-      const existingMaterial = materialList.find(
-        (material) => material.nama === selectedMaterial
-      );
-
-      if (showNewMaterialInput || !existingMaterial) {
+      if (showNewMaterialInput || !selectedMaterial) {
         response = await axios.post("/api/materials", {
-          nama: newMaterial || selectedMaterial,
+          nama: newMaterial,
           satuan,
           jumlah: parseInt(jumlah),
         });
       } else {
-        response = await axios.put(
-          `/api/materials/tambah/${existingMaterial.id}`,
-          {
-            jumlah: parseInt(jumlah),
-          }
+        const existingMaterial = materialList.find(
+          (material) => material.nama === selectedMaterial
         );
+        if (existingMaterial) {
+          response = await axios.put(
+            `/api/materials/tambah/${existingMaterial.id}`,
+            {
+              jumlah: parseInt(jumlah),
+            }
+          );
+        }
       }
 
-      if (response.status === 201 || response.status === 200) {
+      if (response && (response.status === 201 || response.status === 200)) {
         setNotification({
           message: "Material berhasil ditambahkan!",
           color: "green",
@@ -89,6 +91,7 @@ const AddMaterialModal = ({
       console.error("Error adding/updating material:", error);
       setNotification({ message: "Gagal menambahkan material!", color: "red" });
       showNotification("Gagal menambahkan material!", "red");
+      onClose();
     }
   };
 
@@ -97,6 +100,8 @@ const AddMaterialModal = ({
       setShowNewMaterialInput(true);
       setSelectedMaterial("");
       setSatuan("");
+      setNewMaterial("");
+      setIsDuplicate(false);
     } else {
       setShowNewMaterialInput(false);
       setSelectedMaterial(material);
@@ -106,13 +111,17 @@ const AddMaterialModal = ({
       if (existingMaterial) {
         setSatuan(existingMaterial.satuan);
       }
+      setIsDuplicate(false);
     }
   };
 
   const handleNewMaterialChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setNewMaterial(event.currentTarget.value);
+    const value = event.currentTarget.value;
+    setNewMaterial(value);
+    const duplicate = materialList.some((material) => material.nama === value);
+    setIsDuplicate(duplicate);
   };
 
   const handleNotificationClose = () => {
@@ -152,6 +161,11 @@ const AddMaterialModal = ({
                 label="Nama Material Baru"
                 required
               />
+              {isDuplicate && (
+                <div className="text-red-500 text-sm mt-2">
+                  Material tersebut sudah ada dibagian pilihan
+                </div>
+              )}
             </div>
           )}
           <TextInput
@@ -177,7 +191,9 @@ const AddMaterialModal = ({
           <Button onClick={onClose} variant="light">
             Batal
           </Button>
-          <Button onClick={handleSubmit}>Tambah Material</Button>
+          <Button onClick={handleSubmit} disabled={isDuplicate}>
+            Tambah Material
+          </Button>
         </div>
       </div>
     </Modal>

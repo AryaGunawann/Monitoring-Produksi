@@ -2,7 +2,14 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Material } from "../../interfaces/material";
-import { Card, Title, Button, Container, Notification } from "@mantine/core";
+import {
+  Card,
+  Title,
+  Button,
+  Container,
+  Notification,
+  Pagination,
+} from "@mantine/core";
 import AddMaterialModal from "../../components/modal/materialModal";
 
 const MaterialsPage = () => {
@@ -14,6 +21,9 @@ const MaterialsPage = () => {
     message: string;
     color: "blue" | "red" | "yellow" | "green";
   } | null>(null);
+  const [activePage, setActivePage] = useState<number>(1);
+
+  const itemsPerPage = 10;
 
   const fetchMaterials = async () => {
     try {
@@ -49,6 +59,11 @@ const MaterialsPage = () => {
     setNotification({ message, color });
   };
 
+  const displayedMaterials = materials.slice(
+    (activePage - 1) * itemsPerPage,
+    activePage * itemsPerPage
+  );
+
   return (
     <Container className="mx-auto py-8 relative">
       <div className="flex justify-between mb-6 text-black">
@@ -69,7 +84,10 @@ const MaterialsPage = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Nama Material
+                  No.
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  ID | Nama Material
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Satuan
@@ -83,7 +101,7 @@ const MaterialsPage = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {materials.map((material) => {
+              {displayedMaterials.map((material, index) => {
                 const updatedAt = new Date(material.updatedAt);
                 const formattedDate = updatedAt.toLocaleDateString("id-ID", {
                   year: "numeric",
@@ -102,7 +120,13 @@ const MaterialsPage = () => {
                     className={material.jumlah === 0 ? "bg-red-100" : ""}
                   >
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {material.nama}
+                      {(activePage - 1) * itemsPerPage + index + 1}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <span className="text-gray-400 font-light ">
+                        {material.id}
+                      </span>{" "}
+                      | {material.nama}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {material.satuan}
@@ -120,6 +144,14 @@ const MaterialsPage = () => {
           </table>
         </div>
       </Card>
+      {materials.length > itemsPerPage && (
+        <Pagination
+          page={activePage}
+          onChange={setActivePage}
+          total={Math.ceil(materials.length / itemsPerPage)}
+          className="mt-6"
+        />
+      )}
       {notification && (
         <Notification
           color={notification.color}

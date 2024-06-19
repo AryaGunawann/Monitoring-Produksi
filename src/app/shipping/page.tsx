@@ -9,6 +9,7 @@ import {
   Text,
   Container,
   Notification,
+  Pagination,
 } from "@mantine/core";
 import AddShippingModal from "../../components/modal/shippingModal";
 
@@ -45,6 +46,8 @@ const ShippingPage = () => {
   const [notification, setNotification] = useState<NotificationType | null>(
     null
   );
+  const [activePage, setActivePage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchData();
@@ -111,6 +114,14 @@ const ShippingPage = () => {
     }
   };
 
+  const handleConfirmStatusChange = (id: number) => {
+    const selected = shippings.find((shipping) => shipping.id === id);
+    if (selected) {
+      setSelectedShipping(selected);
+      setConfirmationModalOpen(true);
+    }
+  };
+
   const handleNotificationClose = () => {
     setNotification(null);
   };
@@ -122,6 +133,13 @@ const ShippingPage = () => {
   ) => {
     setNotification({ message, color, autoClose });
   };
+
+  // Pagination logic
+  const totalPages = Math.ceil(shippings.length / itemsPerPage);
+  const displayedShippings = shippings.slice(
+    (activePage - 1) * itemsPerPage,
+    activePage * itemsPerPage
+  );
 
   return (
     <Container className="mx-auto py-8">
@@ -142,10 +160,10 @@ const ShippingPage = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  ID
+                  No.
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Nama
+                  ID | Nama
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Jumlah
@@ -156,19 +174,17 @@ const ShippingPage = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Updated At
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {shippings.map((shipping) => (
+              {displayedShippings.map((shipping, index) => (
                 <tr key={shipping.id}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {shipping.id}
+                    {index + 1 + (activePage - 1) * itemsPerPage}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {shipping.Packing?.Produk?.nama || "N/A"}
+                    {shipping.id} - {shipping.Packing?.Produk?.nama || "N/A"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {shipping.jumlah}
@@ -185,14 +201,14 @@ const ShippingPage = () => {
                         <Button
                           variant="outline"
                           color="blue"
-                          onClick={() => updateStatus(shipping.id, "pending")}
+                          onClick={() => handleConfirmStatusChange(shipping.id)}
                         >
                           Pending
                         </Button>
                         <Button
                           variant="outline"
                           color="blue"
-                          onClick={() => updateStatus(shipping.id, "dikirim")}
+                          onClick={() => handleConfirmStatusChange(shipping.id)}
                         >
                           Dikirim
                         </Button>
@@ -203,34 +219,23 @@ const ShippingPage = () => {
                         <Button
                           variant="outline"
                           color="blue"
-                          onClick={() => updateStatus(shipping.id, "dikirim")}
+                          onClick={() => handleConfirmStatusChange(shipping.id)}
                         >
                           Dikirim
                         </Button>
-                        <Button
-                          variant="outline"
-                          color="red"
-                          onClick={() => {
-                            setSelectedShipping(shipping);
-                            setDeleteConfirmationModalOpen(true);
-                          }}
-                        >
-                          Hapus
-                        </Button>
                       </>
                     )}
-                    {shipping.status === "dikirim" && (
-                      <Button
-                        variant="outline"
-                        color="red"
-                        onClick={() => {
-                          setSelectedShipping(shipping);
-                          setDeleteConfirmationModalOpen(true);
-                        }}
-                      >
-                        Hapus
-                      </Button>
-                    )}
+
+                    <Button
+                      variant="outline"
+                      color="red"
+                      onClick={() => {
+                        setSelectedShipping(shipping);
+                        setDeleteConfirmationModalOpen(true);
+                      }}
+                    >
+                      Hapus
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -239,12 +244,21 @@ const ShippingPage = () => {
         </div>
       </Card>
 
+      {shippings.length > itemsPerPage && (
+        <Pagination
+          page={activePage}
+          onChange={setActivePage}
+          total={totalPages}
+          className="mt-4"
+        />
+      )}
+
       <Modal
         opened={confirmationModalOpen}
         onClose={() => setConfirmationModalOpen(false)}
-        title="Konfirmasi Penghapusan"
+        title="Konfirmasi Ubah Status"
       >
-        <Text>Apakah barang ini sudah diterima oleh penerima?</Text>
+        <Text>Apakah Anda ingin mengubah status pengiriman ini?</Text>
         <div className="flex justify-end mt-4 space-x-4">
           <Button
             variant="outline"
@@ -252,12 +266,41 @@ const ShippingPage = () => {
           >
             Batal
           </Button>
-          <Button color="blue" onClick={() => handleConfirmDelete(true)}>
-            Ya
-          </Button>
-          <Button color="red" onClick={() => handleConfirmDelete(false)}>
-            Tidak
-          </Button>
+          {selectedShipping?.status === "Proses" && (
+            <>
+              <Button
+                color="blue"
+                onClick={() => {
+                  updateStatus(selectedShipping!.id, "pending");
+                  setConfirmationModalOpen(false);
+                }}
+              >
+                Pending
+              </Button>
+              <Button
+                color="blue"
+                onClick={() => {
+                  updateStatus(selectedShipping!.id, "dikirim");
+                  setConfirmationModalOpen(false);
+                }}
+              >
+                Dikirim
+              </Button>
+            </>
+          )}
+          {selectedShipping?.status === "pending" && (
+            <>
+              <Button
+                color="blue"
+                onClick={() => {
+                  updateStatus(selectedShipping!.id, "dikirim");
+                  setConfirmationModalOpen(false);
+                }}
+              >
+                Dikirim
+              </Button>
+            </>
+          )}
         </div>
       </Modal>
 
@@ -274,7 +317,7 @@ const ShippingPage = () => {
           >
             Batal
           </Button>
-          <Button color="red" onClick={() => setConfirmationModalOpen(true)}>
+          <Button color="red" onClick={() => handleConfirmDelete(true)}>
             Hapus
           </Button>
         </div>
