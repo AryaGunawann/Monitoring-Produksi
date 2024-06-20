@@ -234,7 +234,7 @@ const ShippingPage = () => {
                         setDeleteConfirmationModalOpen(true);
                       }}
                     >
-                      Hapus
+                      Delete
                     </Button>
                   </td>
                 </tr>

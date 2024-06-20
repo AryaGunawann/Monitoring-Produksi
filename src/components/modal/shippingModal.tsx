@@ -102,8 +102,8 @@ const AddShippingModal = ({
           />
           {!isJumlahValid() && (
             <div className="text-red-500 text-sm">
-              Jumlah packing harus lebih dari 0 dan tidak boleh melebihi jumlah
-              total produk ({maxPackingAllowed}).
+              Jumlah Shipping harus lebih dari 0 dan tidak boleh melebihi jumlah
+              Packing ({maxPackingAllowed}).
             </div>
           )}
         </div>
