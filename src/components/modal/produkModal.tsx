@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import {
+  Modal,
+  TextInput,
+  Title,
+  Button,
+  Notification,
+  useMantineTheme,
+} from "@mantine/core";
 import { Material } from "../../interfaces/material";
-import { Modal, TextInput, Title, Button, Notification } from "@mantine/core";
-
-interface MaterialPendukung {
-  materialId: number;
-  jumlah_material: number;
-}
+import { MaterialPendukung } from "../../interfaces/product";
 
 interface AddProductModalProps {
   visible: boolean;
@@ -24,6 +27,7 @@ const AddProductModal = ({
   onProdukAdded,
   showNotification,
 }: AddProductModalProps) => {
+  const theme = useMantineTheme();
   const [nama, setNama] = useState("");
   const [berat, setBerat] = useState("");
   const [jumlahTotal, setJumlahTotal] = useState("");
@@ -33,7 +37,8 @@ const AddProductModal = ({
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [disableSimpan, setDisableSimpan] = useState(true); // State untuk menonaktifkan tombol Simpan
+  const [disableSimpan, setDisableSimpan] = useState(true);
+  const [isNamaValid, setIsNamaValid] = useState(true); // State untuk validasi nama
 
   useEffect(() => {
     const fetchMaterials = async () => {
@@ -48,7 +53,6 @@ const AddProductModal = ({
   }, []);
 
   useEffect(() => {
-    // Logika untuk memeriksa apakah form valid
     const isValid = () => {
       if (!nama || !berat || !jumlahTotal) return false;
       if (
@@ -57,7 +61,6 @@ const AddProductModal = ({
         )
       )
         return false;
-      // Periksa apakah jumlah_material melebihi stok material
       for (const mp of materialPendukung) {
         const material = materials.find((m) => m.id === mp.materialId);
         if (material && mp.jumlah_material > material.jumlah) {
@@ -67,8 +70,13 @@ const AddProductModal = ({
       return true;
     };
 
-    setDisableSimpan(!isValid()); // Update state disableSimpan berdasarkan validitas form
+    setDisableSimpan(!isValid());
   }, [nama, berat, jumlahTotal, materialPendukung, materials]);
+
+  useEffect(() => {
+    // Periksa apakah ada spasi dalam nama
+    setIsNamaValid(!nama.includes(" "));
+  }, [nama]);
 
   const handleSubmit = async () => {
     try {
@@ -126,12 +134,17 @@ const AddProductModal = ({
           placeholder="Nama Produk"
           label="Nama Produk"
           required
+          error={
+            nama && !isNamaValid
+              ? "Nama produk tidak boleh mengandung spasi"
+              : undefined
+          }
         />
         <TextInput
           value={berat}
           onChange={(event) => setBerat(event.currentTarget.value)}
           placeholder="Berat"
-          label="Berat (gram)"
+          label="Berat"
           type="number"
           required
         />
@@ -183,7 +196,7 @@ const AddProductModal = ({
           <Button
             onClick={handleSubmit}
             loading={loading}
-            disabled={disableSimpan}
+            disabled={disableSimpan || !isNamaValid}
           >
             Simpan
           </Button>

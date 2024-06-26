@@ -63,13 +63,14 @@ const PegawaiPage = () => {
     };
 
     fetchData();
-  }, []);
+  }, [notification]);
 
   const openModal = () => {
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
+    console.log("Modal closed");
     setIsModalOpen(false);
   };
 
@@ -84,7 +85,8 @@ const PegawaiPage = () => {
     setNotification({ message, color });
   };
 
-  const handleAddEmployee = (newEmployee: any) => {
+  const handleAddEmployee = (newEmployee: Pegawai) => {
+    console.log("New Employee:", newEmployee);
     setPegawaiList((prevList) => [...prevList, newEmployee]);
     closeModal();
   };

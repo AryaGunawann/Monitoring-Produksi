@@ -1,12 +1,14 @@
 import { Container } from "@mantine/core";
+import ProductTabel from "../components/produkTabel";
 import MaterialsTabel from "../components/materialTabel";
-import Productstabel from "../components/produkTabel";
 
 export default function HomePage() {
   return (
     <Container>
-      <Productstabel />
-      <MaterialsTabel />
+      <section>
+        <ProductTabel />
+        <MaterialsTabel />
+      </section>
     </Container>
   );
 }

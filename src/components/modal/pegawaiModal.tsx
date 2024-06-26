@@ -79,7 +79,7 @@ const TambahPegawaiModal: React.FC<Props> = ({
     try {
       const response = await axios.post(`/api/pegawai`, formData);
       if (response && (response.status === 201 || response.status === 200)) {
-        onAdd(response.data);
+        onAdd(response.data); // Panggil onAdd untuk menambahkan data baru ke dalam daftar
         showNotification("Pegawai berhasil ditambahkan!", "green");
         onClose();
       } else {
