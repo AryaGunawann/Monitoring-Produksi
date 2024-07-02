@@ -16,15 +16,6 @@ export async function GET() {
   }
 }
 
-export async function getEmployeeByNik(nik) {
-  try {
-    const response = await axios.get(`${API_BASE_URL}/employee/nik/${nik}`);
-    return response.data;
-  } catch (error) {
-    throw new Error("Error fetching employee by NIK");
-  }
-}
-
 // Menambahkan employee baru
 export async function POST(req: NextRequest) {
   try {

@@ -12,24 +12,31 @@ import {
   Group,
   LoadingOverlay,
   Notification,
+  Autocomplete,
 } from "@mantine/core";
 import SlipGajiPDF from "../../components/SlipGajiPDF";
 import html2pdf from "html2pdf.js";
 
 const SlipGajiPage = () => {
-  const [nik, setNik] = useState("");
+  const [nikOrName, setNikOrName] = useState("");
   const [pegawai, setPegawai] = useState(null);
   const [potongan, setPotongan] = useState(0);
   const [kasbon, setKasbon] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [searchOptions, setSearchOptions] = useState([]);
 
   const fetchPegawai = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        `http://localhost:2000/employee/nik/${nik}`
-      );
+      let response;
+      if (isNaN(parseInt(nikOrName))) {
+        // Search by name
+        response = await axios.get(`/api/pegawai/name/${nikOrName}`);
+      } else {
+        // Search by NIK
+        response = await axios.get(`/api/pegawai/nik/${nikOrName}`);
+      }
       setPegawai(response.data.data);
       setError(null);
     } catch (err) {
@@ -43,9 +50,14 @@ const SlipGajiPage = () => {
   const handlePreview = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        `http://localhost:2000/employee/nik/${nik}`
-      );
+      let response;
+      if (isNaN(parseInt(nikOrName))) {
+        // Search by name
+        response = await axios.get(`/api/pegawai/name/${nikOrName}`);
+      } else {
+        // Search by NIK
+        response = await axios.get(`/api/pegawai/nik/${nikOrName}`);
+      }
       setPegawai(response.data.data);
       setError(null);
     } catch (err) {
@@ -71,6 +83,20 @@ const SlipGajiPage = () => {
     html2pdf().from(slipGajiContent).set(opt).save();
   };
 
+  const handleAutocompleteChange = (value) => {
+    setNikOrName(value);
+  };
+
+  const handleAutocompleteSearch = async (query) => {
+    try {
+      const response = await axios.get(`/api/employee/search/${query}`);
+      setSearchOptions(response.data.data);
+    } catch (error) {
+      console.error("Error fetching search options:", error);
+      setSearchOptions([]);
+    }
+  };
+
   return (
     <Container size="sm">
       <Card shadow="sm" padding="lg" withBorder>
@@ -78,10 +104,16 @@ const SlipGajiPage = () => {
           Buat Slip Gaji
         </Title>
         <Space h="md" />
-        <TextInput
-          label="NIK Pegawai"
-          value={nik}
-          onChange={(event) => setNik(event.currentTarget.value)}
+        <Autocomplete
+          data={searchOptions.map((option) => ({
+            value: option.nik,
+            label: option.nama,
+          }))}
+          label="Nama Pegawai atau NIK"
+          value={nikOrName}
+          onChange={handleAutocompleteChange}
+          placeholder="Masukkan Nama atau NIK Pegawai"
+          onSearch={handleAutocompleteSearch}
         />
         <Space h="sm" />
         <Group position="center" mt="md">

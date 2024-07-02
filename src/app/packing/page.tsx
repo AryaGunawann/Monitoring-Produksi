@@ -12,8 +12,11 @@ import {
   Container,
   Notification,
   Pagination,
+  Table,
 } from "@mantine/core";
 import AddPackingModal from "../../components/modal/PackingModal";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { formatDate } from "../../utils/date";
 
 interface IPacking {
   id: number;
@@ -105,6 +108,34 @@ const PackingPage = () => {
     activePage * itemsPerPage
   );
 
+  const renderTableRows = () => {
+    return displayedPackings.map((packing, index) => (
+      <Table.Tr key={packing.id}>
+        <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          {index + 1 + (activePage - 1) * itemsPerPage}
+        </Table.Td>
+        <Table.Td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+          {`${packing.id} - ${packing.Produk?.nama || "nama tidak ditemukan"}`}
+        </Table.Td>
+        <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          {packing.jumlah}
+        </Table.Td>
+        <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          {formatDate(new Date(packing.updatedAt))}
+        </Table.Td>
+        <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          <Button
+            onClick={() => openDeleteConfirmModal(packing)}
+            size="xs"
+            color="red"
+          >
+            <RiDeleteBin6Line />
+          </Button>
+        </Table.Td>
+      </Table.Tr>
+    ));
+  };
+
   return (
     <Container className="mx-auto py-8">
       <div className="flex justify-between mb-6 text-black">
@@ -124,54 +155,30 @@ const PackingPage = () => {
       ) : (
         <Card shadow="sm" className="border rounded-lg p-4">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <Table
+              striped
+              withColumnBorders
+              className="min-w-full divide-y divide-gray-200"
+            >
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     No.
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </Table.Th>
+                  <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     ID | Nama
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </Table.Th>
+                  <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Jumlah
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  </Table.Th>
+                  <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Updated At
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {displayedPackings.map((packing, index) => (
-                  <tr key={packing.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {index + 1 + (activePage - 1) * itemsPerPage}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {packing.id} -{" "}
-                      {packing.Produk?.nama || "nama tidak ditemukan"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {packing.jumlah}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(packing.updatedAt).toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <Button
-                        onClick={() => openDeleteConfirmModal(packing)}
-                        size="xs"
-                        color="red"
-                        variant="outline"
-                      >
-                        Delete
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                  </Table.Th>
+                  <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>{renderTableRows()}</Table.Tbody>
+            </Table>
           </div>
         </Card>
       )}

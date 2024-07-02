@@ -10,8 +10,11 @@ import {
   Container,
   Notification,
   Pagination,
+  Table,
 } from "@mantine/core";
 import AddShippingModal from "../../components/modal/shippingModal";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { formatDate } from "../../utils/date";
 
 // Interface definitions
 interface Shipping {
@@ -141,6 +144,69 @@ const ShippingPage = () => {
     activePage * itemsPerPage
   );
 
+  const renderTableRows = () => {
+    return displayedShippings.map((shipping, index) => (
+      <Table.Tr key={shipping.id}>
+        <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          {index + 1 + (activePage - 1) * itemsPerPage}
+        </Table.Td>
+        <Table.Td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+          {`${shipping.id} - ${shipping.Packing?.Produk?.nama || "N/A"}`}
+        </Table.Td>
+        <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          {shipping.jumlah}
+        </Table.Td>
+        <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          {shipping.status}
+        </Table.Td>
+        <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          {formatDate(new Date(shipping.updatedAt))}
+        </Table.Td>
+        <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 space-x-2">
+          {shipping.status === "Proses" && (
+            <>
+              <Button
+                variant="outline"
+                color="blue"
+                onClick={() => handleConfirmStatusChange(shipping.id)}
+              >
+                Pending
+              </Button>
+              <Button
+                variant="outline"
+                color="blue"
+                onClick={() => handleConfirmStatusChange(shipping.id)}
+              >
+                Dikirim
+              </Button>
+            </>
+          )}
+          {shipping.status === "pending" && (
+            <>
+              <Button
+                variant="outline"
+                color="blue"
+                onClick={() => handleConfirmStatusChange(shipping.id)}
+              >
+                Dikirim
+              </Button>
+            </>
+          )}
+
+          <Button
+            color="red"
+            onClick={() => {
+              setSelectedShipping(shipping);
+              setDeleteConfirmationModalOpen(true);
+            }}
+          >
+            <RiDeleteBin6Line />
+          </Button>
+        </Table.Td>
+      </Table.Tr>
+    ));
+  };
+
   return (
     <Container className="mx-auto py-8">
       <div className="flex justify-between mb-6 text-black">
@@ -156,91 +222,33 @@ const ShippingPage = () => {
 
       <Card shadow="sm" className="border rounded-lg p-4">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <Table
+            striped
+            withColumnBorders
+            className="min-w-full divide-y divide-gray-200"
+          >
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   No.
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                </Table.Th>
+                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   ID | Nama
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                </Table.Th>
+                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Jumlah
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                </Table.Th>
+                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                </Table.Th>
+                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Updated At
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {displayedShippings.map((shipping, index) => (
-                <tr key={shipping.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {index + 1 + (activePage - 1) * itemsPerPage}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {shipping.id} - {shipping.Packing?.Produk?.nama || "N/A"}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {shipping.jumlah}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {shipping.status}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(shipping.updatedAt).toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 space-x-2">
-                    {shipping.status === "Proses" && (
-                      <>
-                        <Button
-                          variant="outline"
-                          color="blue"
-                          onClick={() => handleConfirmStatusChange(shipping.id)}
-                        >
-                          Pending
-                        </Button>
-                        <Button
-                          variant="outline"
-                          color="blue"
-                          onClick={() => handleConfirmStatusChange(shipping.id)}
-                        >
-                          Dikirim
-                        </Button>
-                      </>
-                    )}
-                    {shipping.status === "pending" && (
-                      <>
-                        <Button
-                          variant="outline"
-                          color="blue"
-                          onClick={() => handleConfirmStatusChange(shipping.id)}
-                        >
-                          Dikirim
-                        </Button>
-                      </>
-                    )}
-
-                    <Button
-                      variant="outline"
-                      color="red"
-                      onClick={() => {
-                        setSelectedShipping(shipping);
-                        setDeleteConfirmationModalOpen(true);
-                      }}
-                    >
-                      Delete
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                </Table.Th>
+                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>{renderTableRows()}</Table.Tbody>
+          </Table>
         </div>
       </Card>
 

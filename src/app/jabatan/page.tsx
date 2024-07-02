@@ -9,8 +9,10 @@ import {
   Container,
   Notification,
   Pagination,
+  Table,
 } from "@mantine/core";
 import AddJabatanModal from "../../components/modal/jabatanModal";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 interface Jabatan {
   id: number;
@@ -100,59 +102,44 @@ const JabatanPage = () => {
       {loading ? (
         <Loader />
       ) : error ? (
-        <Alert color="red">{error}</Alert>
+        <Notification color="red">{error}</Notification>
       ) : (
         <>
           <Card shadow="sm" className="border rounded-lg p-4">
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Nama
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Gaji Pokok
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Tunjangan
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Uang Makan
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Aksi
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+              <Table
+                striped
+                withColumnBorders
+                className="min-w-full divide-y divide-gray-200"
+              >
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>Nama</Table.Th>
+                    <Table.Th>Gaji Pokok</Table.Th>
+                    <Table.Th>Tunjangan</Table.Th>
+                    <Table.Th>Uang Makan</Table.Th>
+                    <Table.Th>Aksi</Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
                   {displayedJabatan.map((jabatan) => (
-                    <tr key={jabatan.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {jabatan.nama_jabatan}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {jabatan.gapok}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {jabatan.tunjangan}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {jabatan.uang_makan}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <Table.Tr key={jabatan.id}>
+                      <Table.Td>{jabatan.nama_jabatan}</Table.Td>
+                      <Table.Td>{jabatan.gapok}</Table.Td>
+                      <Table.Td>{jabatan.tunjangan}</Table.Td>
+                      <Table.Td>{jabatan.uang_makan}</Table.Td>
+                      <Table.Td>
                         <Button
                           onClick={() => handleDelete(jabatan.id)}
-                          variant="outline"
                           color="red"
                         >
-                          Delete
+                          <RiDeleteBin6Line />
                         </Button>
-                      </td>
-                    </tr>
+                      </Table.Td>
+                    </Table.Tr>
                   ))}
-                </tbody>
-              </table>
+                </Table.Tbody>
+              </Table>
             </div>
           </Card>
           {jabatanList.length > itemsPerPage && (

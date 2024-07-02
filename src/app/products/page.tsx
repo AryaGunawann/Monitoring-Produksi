@@ -10,9 +10,12 @@ import {
   Container,
   Notification,
   Pagination,
+  Table,
 } from "@mantine/core";
 import AddProductModal from "../../components/modal/produkModal";
 import { Product } from "../../interfaces/product";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { formatDate } from "../../utils/date";
 
 const ProductsPage = () => {
   const [produk, setProduk] = useState<Product[]>([]);
@@ -84,21 +87,9 @@ const ProductsPage = () => {
   };
 
   const identifyLatestNewProduct = (products: Product[]): void => {
-    const latestNewProductMap: Record<string, Product> = {};
+    let latestNew: Product | null = null;
 
     products.forEach((product) => {
-      if (!latestNewProductMap[product.nama]) {
-        latestNewProductMap[product.nama] = product;
-      } else {
-        const existingProduct = latestNewProductMap[product.nama];
-        if (new Date(existingProduct.createdAt) < new Date(product.createdAt)) {
-          latestNewProductMap[product.nama] = product;
-        }
-      }
-    });
-
-    let latestNew: Product | null = null;
-    Object.values(latestNewProductMap).forEach((product) => {
       if (isNewProduct(product.createdAt)) {
         if (
           !latestNew ||
@@ -127,12 +118,56 @@ const ProductsPage = () => {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
-  // Pagination logic
   const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
   const displayedProducts = sortedProducts.slice(
     (activePage - 1) * itemsPerPage,
     activePage * itemsPerPage
   );
+
+  const renderTableRows = () => {
+    return displayedProducts.map((p: Product, index: number) => (
+      <Table.Tr key={p.id}>
+        <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          {index + 1}
+        </Table.Td>
+        <Table.Td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+          {`${p.id} - ${p.nama}`}
+          {latestNewProduct && latestNewProduct.id === p.id && (
+            <span className="inline-block bg-green-500 text-white text-xs uppercase font-semibold px-2 py-1 rounded-md ml-2">
+              NEW
+            </span>
+          )}
+        </Table.Td>
+        <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          {p.berat}
+        </Table.Td>
+        <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          {p.jumlah_total}
+        </Table.Td>
+        <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 w-96">
+          <ul className="list-disc list-inside">
+            {p.material_pendukung.map((mp) => (
+              <li className="w-40" key={mp.id}>
+                {mp.nama}
+              </li>
+            ))}
+          </ul>
+        </Table.Td>
+        <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          {formatDate(new Date(p.updatedAt))}
+        </Table.Td>
+        <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          <Button
+            onClick={() => openDeleteConfirmModal(p)}
+            size="xs"
+            color="red"
+          >
+            <RiDeleteBin6Line />
+          </Button>
+        </Table.Td>
+      </Table.Tr>
+    ));
+  };
 
   return (
     <Container className="mx-auto py-8">
@@ -147,82 +182,37 @@ const ProductsPage = () => {
         />
       </section>
       <Card shadow="sm" className="border rounded-lg p-4">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <div className="overflow-x-auto ">
+          <Table
+            striped
+            withColumnBorders
+            className="min-w-full divide-y divide-gray-200"
+          >
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
+                  No.
+                </Table.Th>
+                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   ID | Nama Product
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                </Table.Th>
+                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Berat
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                </Table.Th>
+                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Jumlah
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                </Table.Th>
+                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Material Yang Digunakan
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                </Table.Th>
+                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Update
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {displayedProducts.map((p: Product) => {
-                const updatedAt = new Date(p.createdAt);
-                const formattedDate = updatedAt.toLocaleDateString("id-ID", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                });
-                const formattedTime = updatedAt.toLocaleTimeString("id-ID", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second: "2-digit",
-                });
-                return (
-                  <tr key={p.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {p.id} - {p.nama}
-                      {latestNewProduct && latestNewProduct.nama === p.nama && (
-                        <span className="inline-block bg-green-500 text-white text-xs uppercase font-semibold px-2 py-1 rounded-md ml-2">
-                          NEW
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {p.berat}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {p.jumlah_total}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <ul className="list-disc list-inside">
-                        {p.material_pendukung.map((mp) => (
-                          <li key={mp.id}>{mp.nama}</li>
-                        ))}
-                      </ul>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {`${formattedDate} (${formattedTime})`}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <Button
-                        onClick={() => openDeleteConfirmModal(p)}
-                        size="xs"
-                        color="red"
-                        variant="outline"
-                      >
-                        Delete
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                </Table.Th>
+                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>{renderTableRows()}</Table.Tbody>
+          </Table>
         </div>
       </Card>
       {produk.length > itemsPerPage && (

@@ -8,12 +8,14 @@ import {
   Title,
   Button,
   Container,
-  Notification,
   Modal,
   Pagination,
+  Table,
 } from "@mantine/core";
 import AddPegawaiModal from "../../components/modal/pegawaiModal";
 import Link from "next/link";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { MdPersonSearch } from "react-icons/md";
 
 interface Jabatan {
   id: number;
@@ -70,7 +72,6 @@ const PegawaiPage = () => {
   };
 
   const closeModal = () => {
-    console.log("Modal closed");
     setIsModalOpen(false);
   };
 
@@ -86,7 +87,6 @@ const PegawaiPage = () => {
   };
 
   const handleAddEmployee = (newEmployee: Pegawai) => {
-    console.log("New Employee:", newEmployee);
     setPegawaiList((prevList) => [...prevList, newEmployee]);
     closeModal();
   };
@@ -124,7 +124,7 @@ const PegawaiPage = () => {
 
   return (
     <Container className="mx-auto py-8">
-      <div className="flex justify-between mb-6 text-black">
+      <div className="flex justify-between mb-6">
         <Title order={1}>Daftar Pegawai</Title>
         <Button onClick={openModal}>Tambah Pegawai</Button>
         <AddPegawaiModal
@@ -142,62 +142,64 @@ const PegawaiPage = () => {
         <>
           <Card shadow="sm" className="border rounded-lg p-4">
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <Table striped withColumnBorders className="min-w-full">
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       No.
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    </Table.Th>
+                    <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       NIK
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    </Table.Th>
+                    <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Nama
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    </Table.Th>
+                    <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Email
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    </Table.Th>
+                    <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Jabatan
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                    </Table.Th>
+                    <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Aksi
+                    </Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
                   {displayedPegawai.map((pegawai, index) => (
-                    <tr key={pegawai.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <Table.Tr key={pegawai.id}>
+                      <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {index + 1 + (activePage - 1) * itemsPerPage}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      </Table.Td>
+                      <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {pegawai.nik}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      </Table.Td>
+                      <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {pegawai.nama}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      </Table.Td>
+                      <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {pegawai.email}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      </Table.Td>
+                      <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {pegawai.Jabatan?.nama_jabatan}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex space-x-2">
+                      </Table.Td>
+                      <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 space-x-2">
                         <Link href={`/pegawai/${pegawai.id}`} passHref>
                           <Button component="a" color="blue">
-                            Detail
+                            <MdPersonSearch />
                           </Button>
                         </Link>
                         <Button
                           color="red"
                           onClick={() => openDeleteConfirmation(pegawai.id)}
                         >
-                          Hapus
+                          <RiDeleteBin6Line />
                         </Button>
-                      </td>
-                    </tr>
+                      </Table.Td>
+                    </Table.Tr>
                   ))}
-                </tbody>
-              </table>
+                </Table.Tbody>
+              </Table>
             </div>
           </Card>
           {pegawaiList.length > itemsPerPage && (

@@ -9,10 +9,7 @@ import {
   Loader,
   Alert,
   Container,
-  Group,
-  Avatar,
-  Stack,
-  Badge,
+  Table,
 } from "@mantine/core";
 
 interface Jabatan {
@@ -51,10 +48,9 @@ const PegawaiDetailPage = ({ params: { id } }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:2000/employee/${id}`
-        );
+        const response = await axios.get(`/api/pegawai/${id}`);
         setPegawai(response.data.data);
+        console.log(setPegawai);
       } catch (error) {
         setError("Error fetching pegawai: " + error);
       } finally {
@@ -82,61 +78,109 @@ const PegawaiDetailPage = ({ params: { id } }) => {
           {pegawai.nama}
         </Title>
         <Divider my="sm" />
-        <Stack spacing="sm">
-          <Text>
-            <strong>NIK:</strong> {pegawai.nik}
-          </Text>
-          <Group align="center">
-            <Text>
-              <strong>Email: </strong>
-              {pegawai.email}
-            </Text>
-          </Group>
-          <Text>
-            <strong>Tempat Lahir:</strong> {pegawai.tempat_lahir}
-          </Text>
-          <Text>
-            <strong>Tanggal Lahir:</strong> {pegawai.tanggal_lahir}
-          </Text>
-          <Text>
-            <strong>Jenis Kelamin:</strong> {pegawai.jenis_kelamin}
-          </Text>
-          <Text>
-            <strong>Agama:</strong> {pegawai.agama}
-          </Text>
-          <Group spacing="xs" align="center">
-            <strong>Alamat:</strong>
-            <Text>{pegawai.alamat}</Text>
-          </Group>
-          <Text>
-            <strong>Tanggal Bergabung:</strong> {pegawai.tanggal_bergabung}
-          </Text>
-          <Group spacing="xs" align="center">
-            <strong>No telepon</strong>
-            <Text>{pegawai.no_tlpn}</Text>
-          </Group>
-          <Divider my="sm" />
-          {pegawai.Jabatan ? (
-            <>
-              <Group spacing="xs" align="center">
-                <Text>
-                  <strong>Jabatan:</strong> {pegawai.Jabatan.nama_jabatan}
-                </Text>
-              </Group>
-              <Text>
-                <strong>Gaji Pokok:</strong> {pegawai.Jabatan.gapok}
-              </Text>
-              <Text>
-                <strong>Tunjangan:</strong> {pegawai.Jabatan.tunjangan}
-              </Text>
-              <Text>
-                <strong>Uang Makan:</strong> {pegawai.Jabatan.uang_makan}
-              </Text>
-            </>
-          ) : (
-            <Text>Jabatan: Data jabatan tidak tersedia</Text>
-          )}
-        </Stack>
+        <Table striped withColumnBorders className="min-w-full">
+          <Table.Tbody>
+            <Table.Tr>
+              <Table.Td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                NIK
+              </Table.Td>
+              <Table.Td className="px-6 py-4 whitespace-nowrap text-sm">
+                {pegawai.nik}
+              </Table.Td>
+            </Table.Tr>
+            <Table.Tr>
+              <Table.Td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                Email
+              </Table.Td>
+              <Table.Td className="px-6 py-4 whitespace-nowrap text-sm">
+                {pegawai.email}
+              </Table.Td>
+            </Table.Tr>
+            <Table.Tr>
+              <Table.Td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                Tempat Lahir
+              </Table.Td>
+              <Table.Td className="px-6 py-4 whitespace-nowrap text-sm">
+                {pegawai.tempat_lahir}
+              </Table.Td>
+            </Table.Tr>
+            <Table.Tr>
+              <Table.Td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                Tanggal Lahir
+              </Table.Td>
+              <Table.Td className="px-6 py-4 whitespace-nowrap text-sm">
+                {pegawai.tanggal_lahir}
+              </Table.Td>
+            </Table.Tr>
+            <Table.Tr>
+              <Table.Td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                Jenis Kelamin
+              </Table.Td>
+              <Table.Td className="px-6 py-4 whitespace-nowrap text-sm">
+                {pegawai.jenis_kelamin}
+              </Table.Td>
+            </Table.Tr>
+            <Table.Tr>
+              <Table.Td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                Agama
+              </Table.Td>
+              <Table.Td className="px-6 py-4 whitespace-nowrap text-sm">
+                {pegawai.agama}
+              </Table.Td>
+            </Table.Tr>
+            <Table.Tr>
+              <Table.Td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                Alamat
+              </Table.Td>
+              <Table.Td className="px-6 py-4 whitespace-nowrap text-sm">
+                {pegawai.alamat}
+              </Table.Td>
+            </Table.Tr>
+            <Table.Tr>
+              <Table.Td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                Tanggal Bergabung
+              </Table.Td>
+              <Table.Td className="px-6 py-4 whitespace-nowrap text-sm">
+                {pegawai.tanggal_bergabung}
+              </Table.Td>
+            </Table.Tr>
+            <Table.Tr>
+              <Table.Td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                No Telepon
+              </Table.Td>
+              <Table.Td className="px-6 py-4 whitespace-nowrap text-sm">
+                {pegawai.no_tlpn}
+              </Table.Td>
+            </Table.Tr>
+            <Table.Tr>
+              <Table.Td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                Jabatan
+              </Table.Td>
+              <Table.Td className="px-6 py-4 whitespace-nowrap text-sm">
+                {pegawai.Jabatan ? (
+                  <Table striped>
+                    <Table.Tbody>
+                      <Table.Tr>
+                        <Table.Td>Gaji Pokok</Table.Td>
+                        <Table.Td>{pegawai.Jabatan.gapok}</Table.Td>
+                      </Table.Tr>
+                      <Table.Tr>
+                        <Table.Td>Tunjangan</Table.Td>
+                        <Table.Td>{pegawai.Jabatan.tunjangan}</Table.Td>
+                      </Table.Tr>
+                      <Table.Tr>
+                        <Table.Td>Uang Makan</Table.Td>
+                        <Table.Td>{pegawai.Jabatan.uang_makan}</Table.Td>
+                      </Table.Tr>
+                    </Table.Tbody>
+                  </Table>
+                ) : (
+                  <Text>Data jabatan tidak tersedia</Text>
+                )}
+              </Table.Td>
+            </Table.Tr>
+          </Table.Tbody>
+        </Table>
       </Card>
     </Container>
   );
