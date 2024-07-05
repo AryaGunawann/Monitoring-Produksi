@@ -13,6 +13,7 @@ import {
 } from "@mantine/core";
 import AddJabatanModal from "../../components/modal/jabatanModal";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { formatRupiah } from "../../utils/rupiah";
 
 interface Jabatan {
   id: number;
@@ -125,9 +126,9 @@ const JabatanPage = () => {
                   {displayedJabatan.map((jabatan) => (
                     <Table.Tr key={jabatan.id}>
                       <Table.Td>{jabatan.nama_jabatan}</Table.Td>
-                      <Table.Td>{jabatan.gapok}</Table.Td>
-                      <Table.Td>{jabatan.tunjangan}</Table.Td>
-                      <Table.Td>{jabatan.uang_makan}</Table.Td>
+                      <Table.Td>{formatRupiah(jabatan.gapok)}</Table.Td>
+                      <Table.Td>{formatRupiah(jabatan.tunjangan)}</Table.Td>
+                      <Table.Td>{formatRupiah(jabatan.uang_makan)}</Table.Td>
                       <Table.Td>
                         <Button
                           onClick={() => handleDelete(jabatan.id)}

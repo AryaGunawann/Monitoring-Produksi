@@ -152,17 +152,13 @@ const SlipGajiPage = () => {
               min={0}
             />
             <Space h="md" />
-            <Group position="center">
-              <Button color="blue" onClick={handlePreview}>
-                Preview Slip Gaji
-              </Button>
-            </Group>
+            <Group className=" font-bold text-center">Preview Slip Gaji</Group>
             <Space h="md" />
             <SlipGajiPDF
               pegawai={pegawai}
               potongan={potongan}
               kasbon={kasbon}
-              onDownloadPDF={handleDownloadPDF} // Mengirimkan fungsi handleDownloadPDF sebagai prop
+              onDownloadPDF={handleDownloadPDF}
             />
           </>
         )}

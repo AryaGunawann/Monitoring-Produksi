@@ -1,4 +1,5 @@
 import React from "react";
+import { formatRupiah } from "../utils/rupiah";
 
 const SlipGajiPDF = ({ pegawai, potongan, kasbon, onDownloadPDF }) => {
   const bulanIni = new Date().toLocaleString("default", { month: "long" });
@@ -9,15 +10,15 @@ const SlipGajiPDF = ({ pegawai, potongan, kasbon, onDownloadPDF }) => {
   const gajiBersih = totalGaji - potongan - kasbon;
 
   return (
-    <div>
-      <div className="p-8 bg-white shadow-md rounded-md" id="slip-gaji-content">
+    <div id="slip-gaji-content">
+      <div className="p-3 bg-white shadow-md rounded-md">
         <div className="flex justify-between mb-8">
           <div>
-            <h2 className="text-xl font-bold">PT. Tritek Indonesia</h2>
+            <h2 className="text-2xl font-bold">PT. Tritek Indonesia</h2>
             <p className="text-sm text-gray-600">Jl. Contoh No. 123, Jakarta</p>
             <p className="text-sm text-gray-600">Telepon: (021) 12345678</p>
           </div>
-          <div>
+          <div className="text-right">
             <h2 className="text-xl font-bold">Slip Gaji Bulan {bulanIni}</h2>
             <p className="text-sm text-gray-600">
               Periode: {new Date().getFullYear()}
@@ -25,62 +26,85 @@ const SlipGajiPDF = ({ pegawai, potongan, kasbon, onDownloadPDF }) => {
           </div>
         </div>
 
-        {/* Informasi Pegawai */}
         <div className="mb-8">
           <h3 className="text-lg font-bold mb-2">Informasi Pegawai</h3>
-          <div className="flex flex-wrap">
-            <div className="w-full md:w-1/2">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
               <p className="text-sm text-gray-700">Nama:</p>
               <p className="text-lg font-bold">{pegawai.nama}</p>
             </div>
-            <div className="w-full md:w-1/2">
+            <div>
               <p className="text-sm text-gray-700">NIK:</p>
               <p className="text-lg font-bold">{pegawai.nik}</p>
             </div>
-            <div className="w-full md:w-1/2">
+            <div>
               <p className="text-sm text-gray-700">Jabatan:</p>
               <p className="text-lg font-bold">
                 {pegawai.Jabatan.nama_jabatan}
               </p>
             </div>
-            <div className="w-full md:w-1/2">
+            <div>
               <p className="text-sm text-gray-700">Tanggal Bergabung:</p>
               <p className="text-lg font-bold">{pegawai.tanggal_bergabung}</p>
             </div>
           </div>
         </div>
 
-        {/* Tabel Rincian Gaji */}
         <div>
           <h3 className="text-lg font-bold mb-2">Rincian Gaji</h3>
-          <div className="flex flex-row border-b border-gray-300 mb-2">
-            <p className="w-1/6 text-sm font-bold">Gaji Pokok</p>
-            <p className="w-1/6 text-sm font-bold">Tunjangan</p>
-            <p className="w-1/6 text-sm font-bold">Uang Makan</p>
-            <p className="w-1/6 text-sm font-bold">Potongan</p>
-            <p className="w-1/6 text-sm font-bold">Kasbon</p>
-            <p className="w-1/6 text-sm font-bold">Gaji Bersih</p>
-          </div>
-          <div className="flex flex-row border-b border-gray-300 mb-2">
-            <p className="w-1/6 text-sm">
-              {pegawai.Jabatan.gapok.toLocaleString()}
-            </p>
-            <p className="w-1/6 text-sm">
-              {pegawai.Jabatan.tunjangan.toLocaleString()}
-            </p>
-            <p className="w-1/6 text-sm">
-              {pegawai.Jabatan.uang_makan.toLocaleString()}
-            </p>
-            <p className="w-1/6 text-sm">{potongan.toLocaleString()}</p>
-            <p className="w-1/6 text-sm">{kasbon.toLocaleString()}</p>
-            <p className="w-1/6 text-sm">{gajiBersih.toLocaleString()}</p>
-          </div>
+          <table className=" w-full text-left table-auto mb-4">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border px-2 py-1 text-xs">Gaji Pokok</th>
+                <th className="border px-2 py-1 text-xs">Tunjangan</th>
+                <th className="border px-2 py-1 text-xs">Uang Makan</th>
+                <th className="border px-2 py-1 text-xs">Potongan</th>
+                <th className="border px-2 py-1 text-xs">Kasbon</th>
+                <th className="border px-2 py-1 text-xs">Gaji Bersih</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="border px-2 py-1 text-xs">
+                  {formatRupiah(pegawai.Jabatan.gapok)}
+                </td>
+                <td className="border px-2 py-1 text-xs">
+                  {formatRupiah(pegawai.Jabatan.tunjangan)}
+                </td>
+                <td className="border px-2 py-1 text-xs">
+                  {formatRupiah(pegawai.Jabatan.uang_makan)}
+                </td>
+                <td className="border px-2 py-1 text-xs">
+                  {formatRupiah(potongan)}
+                </td>
+                <td className="border px-2 py-1 text-xs">
+                  {formatRupiah(kasbon)}
+                </td>
+                <td className="border px-2 py-1 text-xs">
+                  {formatRupiah(gajiBersih)}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
-        {/* TTD */}
-        <div className="mt-8">
-          <p className="text-sm text-right">TTD,</p>
-          <p className="text-lg font-bold text-right">Manajer HR</p>
+        <p className="text-sm mb-4">
+          Slip Gaji Dikeluarkan Pada Bulan: {bulanIni}
+        </p>
+
+        <div className="mt-8 text-right">
+          <p className="text-sm">TTD,</p>
+          <p className="text-lg font-bold">Manajer HR</p>
+        </div>
+
+        <div className="mt-8 text-left">
+          <p className="text-sm">
+            Untuk pertanyaan lebih lanjut, silakan hubungi kami di (021)
+            12345678 atau email ke hr@tritek.co.id.
+          </p>
+          <p className="text-sm mt-2">Hormat kami,</p>
+          <p className="text-sm mt-1">Nama Manajer HR</p>
+          <p className="text-sm">PT. Tritek Indonesia</p>
         </div>
       </div>
       <div className="mt-8 flex justify-end">
