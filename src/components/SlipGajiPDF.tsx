@@ -10,8 +10,8 @@ const SlipGajiPDF = ({ pegawai, potongan, kasbon, onDownloadPDF }) => {
   const gajiBersih = totalGaji - potongan - kasbon;
 
   return (
-    <div id="slip-gaji-content">
-      <div className="p-3 bg-white shadow-md rounded-md">
+    <div>
+      <div className="p-3 bg-white shadow-md rounded-md" id="slip-gaji-content">
         <div className="flex justify-between mb-8">
           <div>
             <h2 className="text-2xl font-bold">PT. Tritek Indonesia</h2>
