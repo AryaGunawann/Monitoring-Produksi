@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import {
   Card,
@@ -8,9 +8,11 @@ import {
   Container,
   Notification,
   Pagination,
+  Table,
 } from "@mantine/core";
 import AddMaterialModal from "../../components/modal/materialModal";
 import { Material } from "../../utils/interfaces";
+import { FaPlus } from "react-icons/fa";
 
 const MaterialsPage = () => {
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -59,17 +61,19 @@ const MaterialsPage = () => {
     setNotification({ message, color });
   };
 
-  const displayedMaterials = materials.slice(
-    (activePage - 1) * itemsPerPage,
-    activePage * itemsPerPage
-  );
+  const displayedMaterials = useMemo(() => {
+    return materials.slice(
+      (activePage - 1) * itemsPerPage,
+      activePage * itemsPerPage
+    );
+  }, [materials, activePage, itemsPerPage]);
 
   return (
     <Container className="mx-auto py-8 relative">
       <div className="flex justify-between mb-6 text-black">
         <Title order={1}>Daftar Material</Title>
         <Button onClick={() => handleModalVisibility(true)}>
-          Tambah Material
+          <FaPlus />
         </Button>
         <AddMaterialModal
           visible={modalVisible}
@@ -80,27 +84,31 @@ const MaterialsPage = () => {
       </div>
       <Card shadow="sm" className="border rounded-lg p-4 relative">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <Table
+            striped
+            withColumnBorders
+            className="min-w-full divide-y divide-gray-200"
+          >
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   No.
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                </Table.Th>
+                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   ID | Nama Material
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                </Table.Th>
+                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Satuan
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                </Table.Th>
+                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Jumlah
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                </Table.Th>
+                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Updated At
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+                </Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody className="bg-white divide-y divide-gray-200">
               {displayedMaterials.map((material, index) => {
                 const updatedAt = new Date(material.updatedAt);
                 const formattedDate = updatedAt.toLocaleDateString("id-ID", {
@@ -115,33 +123,33 @@ const MaterialsPage = () => {
                 });
 
                 return (
-                  <tr
+                  <Table.Tr
                     key={material.id}
                     className={material.jumlah === 0 ? "bg-red-100" : ""}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <Table.Td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {(activePage - 1) * itemsPerPage + index + 1}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      <span className="text-gray-400 font-light ">
+                    </Table.Td>
+                    <Table.Td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <span className="text-gray-400 font-light">
                         {material.id}
                       </span>{" "}
                       | {material.nama}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    </Table.Td>
+                    <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {material.satuan}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    </Table.Td>
+                    <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {material.jumlah}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    </Table.Td>
+                    <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {`${formattedDate} ${formattedTime}`}
-                    </td>
-                  </tr>
+                    </Table.Td>
+                  </Table.Tr>
                 );
               })}
-            </tbody>
-          </table>
+            </Table.Tbody>
+          </Table>
         </div>
       </Card>
       {materials.length > itemsPerPage && (

@@ -15,6 +15,7 @@ import {
 import AddShippingModal from "../../components/modal/shippingModal";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { formatDate } from "../../utils/date";
+import { FaPlus } from "react-icons/fa";
 
 // Interface definitions
 interface Shipping {
@@ -206,7 +207,9 @@ const ShippingPage = () => {
     <Container className="mx-auto py-8">
       <div className="flex justify-between mb-6 text-black">
         <Title order={1}>Daftar Pengiriman</Title>
-        <Button onClick={openModal}>Tambah Pengiriman</Button>
+        <Button onClick={openModal}>
+          <FaPlus />
+        </Button>
         <AddShippingModal
           visible={isModalOpen}
           onClose={closeModal}

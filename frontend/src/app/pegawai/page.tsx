@@ -16,6 +16,7 @@ import AddPegawaiModal from "../../components/modal/pegawaiModal";
 import Link from "next/link";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { MdPersonSearch } from "react-icons/md";
+import { FaPlus } from "react-icons/fa";
 
 interface Jabatan {
   id: number;
@@ -126,7 +127,9 @@ const PegawaiPage = () => {
     <Container className="mx-auto py-8">
       <div className="flex justify-between mb-6">
         <Title order={1}>Daftar Pegawai</Title>
-        <Button onClick={openModal}>Tambah Pegawai</Button>
+        <Button onClick={openModal}>
+          <FaPlus />
+        </Button>
         <AddPegawaiModal
           visible={isModalOpen}
           onClose={closeModal}
@@ -161,7 +164,7 @@ const PegawaiPage = () => {
                       Jabatan
                     </Table.Th>
                     <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Aksi
+                      Action
                     </Table.Th>
                   </Table.Tr>
                 </Table.Thead>

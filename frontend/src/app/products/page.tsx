@@ -16,6 +16,7 @@ import AddProductModal from "../../components/modal/produkModal";
 import { Product } from "../../utils/interfaces";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { formatDate } from "../../utils/date";
+import { FaPlus } from "react-icons/fa";
 
 const ProductsPage = () => {
   const [produk, setProduk] = useState<Product[]>([]);
@@ -173,7 +174,9 @@ const ProductsPage = () => {
     <Container className="mx-auto py-8">
       <section className="flex justify-between mb-6 text-black">
         <Title order={1}>Product List</Title>
-        <Button onClick={openModal}>Buat Product</Button>
+        <Button onClick={openModal}>
+          <FaPlus />
+        </Button>
         <AddProductModal
           visible={isModalOpen}
           onClose={closeModal}

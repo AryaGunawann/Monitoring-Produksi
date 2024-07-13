@@ -15,6 +15,7 @@ import AddJabatanModal from "../../components/modal/jabatanModal";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { formatRupiah } from "../../utils/rupiah";
 import { Jabatan } from "../../utils/interfaces";
+import { FaPlus } from "react-icons/fa";
 
 const JabatanPage = () => {
   const [jabatanList, setJabatanList] = useState<Jabatan[]>([]);
@@ -84,7 +85,9 @@ const JabatanPage = () => {
     <Container className="mx-auto py-8">
       <div className="flex justify-between mb-6 text-black">
         <Title order={1}>Daftar Jabatan</Title>
-        <Button onClick={openModal}>Tambah Jabatan</Button>
+        <Button onClick={openModal}>
+          <FaPlus />
+        </Button>
         <AddJabatanModal
           visible={isModalOpen}
           onClose={closeModal}
@@ -110,7 +113,7 @@ const JabatanPage = () => {
                     <Table.Th>Gaji Pokok</Table.Th>
                     <Table.Th>Tunjangan</Table.Th>
                     <Table.Th>Uang Makan</Table.Th>
-                    <Table.Th>Aksi</Table.Th>
+                    <Table.Th>Action</Table.Th>
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>

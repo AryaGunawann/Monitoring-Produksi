@@ -17,6 +17,7 @@ import {
 import AddPackingModal from "../../components/modal/PackingModal";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { formatDate } from "../../utils/date";
+import { FaPlus } from "react-icons/fa";
 
 interface IPacking {
   id: number;
@@ -140,7 +141,9 @@ const PackingPage = () => {
     <Container className="mx-auto py-8">
       <div className="flex justify-between mb-6 text-black">
         <Title order={1}>Packing List</Title>
-        <Button onClick={openModal}>Tambah Packing</Button>
+        <Button onClick={openModal}>
+          <FaPlus />
+        </Button>
         <AddPackingModal
           visible={isModalOpen}
           onClose={closeModal}
