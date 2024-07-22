@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import {
   Card,
@@ -30,14 +30,11 @@ const ProductsPage = () => {
     message: string;
     color: "blue" | "red" | "yellow" | "green";
   } | null>(null);
-  const [activePage, setActivePage] = useState(1);
+  const [activePage, setActivePage] = useState<number>(1);
+
   const itemsPerPage = 10;
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const response = await axios.get("/api/produk");
       setProduk(response.data);
@@ -45,7 +42,11 @@ const ProductsPage = () => {
     } catch (error) {
       console.error("Error fetching produk: " + error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -171,7 +172,7 @@ const ProductsPage = () => {
   };
 
   return (
-    <Container className="mx-auto py-8">
+    <Container className="mx-auto py-8 relative">
       <section className="flex justify-between mb-6 text-black">
         <Title order={1}>Product List</Title>
         <Button onClick={openModal}>

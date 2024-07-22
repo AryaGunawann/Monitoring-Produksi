@@ -8,8 +8,17 @@ import {
   Notification,
   useMantineTheme,
 } from "@mantine/core";
-import { Material } from "../../interfaces/material";
-import { MaterialPendukung } from "../../interfaces/product";
+
+interface Material {
+  id: number;
+  nama: string;
+  jumlah: number;
+}
+
+interface MaterialPendukung {
+  materialId: number;
+  jumlah_material: number;
+}
 
 interface AddProductModalProps {
   visible: boolean;
@@ -30,7 +39,8 @@ const AddProductModal = ({
   const theme = useMantineTheme();
   const [nama, setNama] = useState("");
   const [berat, setBerat] = useState("");
-  const [jumlahTotal, setJumlahTotal] = useState("");
+  const [beratPerItem, setBeratPerItem] = useState<number | null>(null);
+  const [jumlahTotal, setJumlahTotal] = useState<number | null>(null);
   const [materialPendukung, setMaterialPendukung] = useState<
     MaterialPendukung[]
   >([]);
@@ -74,7 +84,6 @@ const AddProductModal = ({
   }, [nama, berat, jumlahTotal, materialPendukung, materials]);
 
   useEffect(() => {
-    // Periksa apakah ada spasi dalam nama
     setIsNamaValid(!nama.includes(" "));
   }, [nama]);
 
@@ -85,7 +94,7 @@ const AddProductModal = ({
       const response = await axios.post("/api/produk", {
         nama,
         berat: parseInt(berat),
-        jumlah_total: parseInt(jumlahTotal),
+        jumlah_total: parseInt(jumlahTotal!.toString()),
         material_pendukung: materialPendukung.map((mp) => ({
           id: mp.materialId,
           jumlah: mp.jumlah_material,
@@ -106,10 +115,32 @@ const AddProductModal = ({
   };
 
   const handleAddMaterial = () => {
-    setMaterialPendukung((prevMaterials) => [
-      ...prevMaterials,
-      { materialId: 0, jumlah_material: 0 },
-    ]);
+    if (beratPerItem && jumlahTotal) {
+      const totalBerat = beratPerItem * jumlahTotal;
+      setMaterialPendukung((prevMaterials) => [
+        ...prevMaterials,
+        { materialId: 0, jumlah_material: totalBerat },
+      ]);
+    } else {
+      setMaterialPendukung((prevMaterials) => [
+        ...prevMaterials,
+        { materialId: 0, jumlah_material: 0 },
+      ]);
+    }
+  };
+
+  const handleJumlahTotalChange = (value: string) => {
+    const jumlah = parseInt(value);
+    setJumlahTotal(jumlah);
+
+    if (beratPerItem) {
+      const totalBerat = beratPerItem * jumlah;
+      const newMaterials = materialPendukung.map((mp) => ({
+        ...mp,
+        jumlah_material: totalBerat,
+      }));
+      setMaterialPendukung(newMaterials);
+    }
   };
 
   const handleInputChange = (
@@ -147,10 +178,15 @@ const AddProductModal = ({
           label="Berat"
           type="number"
           required
+          onBlur={(event) =>
+            setBeratPerItem(parseFloat(event.currentTarget.value))
+          }
         />
         <TextInput
-          value={jumlahTotal}
-          onChange={(event) => setJumlahTotal(event.currentTarget.value)}
+          value={jumlahTotal?.toString() || ""}
+          onChange={(event) =>
+            handleJumlahTotalChange(event.currentTarget.value)
+          }
           placeholder="Jumlah Total"
           label="Jumlah yang akan dibuat"
           type="number"

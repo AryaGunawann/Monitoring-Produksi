@@ -95,6 +95,12 @@ const TambahPegawaiModal: React.FC<Props> = ({
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = event.target;
+
+    // Jika field adalah NIK dan panjangnya lebih dari 9, jangan ubah state
+    if (name === "nik" && value.length > 9) {
+      return;
+    }
+
     setFormData({
       ...formData,
       [name]: value,
@@ -128,6 +134,7 @@ const TambahPegawaiModal: React.FC<Props> = ({
             onChange={handleChange}
             required
             type="number"
+            maxLength={9} // Batasi input hanya sampai 9 karakter
           />
           <TextInput
             required
@@ -221,7 +228,7 @@ const TambahPegawaiModal: React.FC<Props> = ({
             value={formData.no_tlpn}
             name="no_tlpn"
             onChange={handleChange}
-            type="tel"
+            type="number"
           />
         </div>
         <div className="mt-6 flex justify-center">

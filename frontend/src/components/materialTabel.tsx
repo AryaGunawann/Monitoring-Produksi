@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Material } from "../utils/interfaces";
-import { Loader, Alert, Title, Card, Table } from "@mantine/core";
+import { Loader, Alert, Title, Card, Table, Container } from "@mantine/core";
 
 const MaterialsTabel = () => {
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -25,7 +25,7 @@ const MaterialsTabel = () => {
   }, []);
 
   return (
-    <div className="container mx-auto py-8">
+    <Container className="c mx-auto py-8">
       <div className="mb-2 text-black">
         <Title order={3}>Material</Title>
       </div>
@@ -101,7 +101,7 @@ const MaterialsTabel = () => {
           </div>
         </Card>
       )}
-    </div>
+    </Container>
   );
 };
 

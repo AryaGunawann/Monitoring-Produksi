@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { Loader, Alert, Title, Card, Table } from "@mantine/core";
+import { Loader, Alert, Title, Card, Table, Container } from "@mantine/core";
 import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 
 interface Produk {
@@ -105,7 +105,7 @@ const ProductTabel = () => {
   };
 
   return (
-    <div className="container mx-auto py-8">
+    <Container className="container mx-auto py-8">
       <div className="mb-2 text-black">
         <Title order={3}>Total Produk</Title>
       </div>
@@ -130,7 +130,7 @@ const ProductTabel = () => {
                     Nama Produk
                   </Table.Th>
                   <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Jumlah Dibuat
+                    Jumlah Tersisa
                   </Table.Th>
                   <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Updated At
@@ -203,7 +203,7 @@ const ProductTabel = () => {
           </div>
         </Card>
       )}
-    </div>
+    </Container>
   );
 };
 

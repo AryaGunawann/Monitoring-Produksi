@@ -8,7 +8,7 @@ import {
   Notification,
 } from "@mantine/core";
 import axios from "axios";
-import { Material } from "../../interfaces/material";
+import { Material } from "../../utils/interfaces";
 
 interface AddMaterialModalProps {
   visible: boolean;
@@ -31,13 +31,10 @@ const AddMaterialModal = ({
   const [selectedMaterial, setSelectedMaterial] = useState<string>("");
   const [materialList, setMaterialList] = useState<Material[]>([]);
   const [newMaterial, setNewMaterial] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
   const [showNewMaterialInput, setShowNewMaterialInput] =
     useState<boolean>(false);
   const [isDuplicate, setIsDuplicate] = useState<boolean>(false);
-  const [notification, setNotification] = useState<{
-    message: string;
-    color: "blue" | "red" | "yellow" | "green";
-  } | null>(null);
 
   useEffect(() => {
     if (visible) {
@@ -79,19 +76,12 @@ const AddMaterialModal = ({
       }
 
       if (response && (response.status === 201 || response.status === 200)) {
-        setNotification({
-          message: "Material berhasil ditambahkan!",
-          color: "green",
-        });
-        onMaterialAdded();
         showNotification("Material berhasil ditambahkan!", "green");
+        onMaterialAdded();
         onClose();
       }
     } catch (error) {
-      console.error("Error adding/updating material:", error);
-      setNotification({ message: "Gagal menambahkan material!", color: "red" });
       showNotification("Gagal menambahkan material!", "red");
-      onClose();
     }
   };
 
@@ -122,10 +112,6 @@ const AddMaterialModal = ({
     setNewMaterial(value);
     const duplicate = materialList.some((material) => material.nama === value);
     setIsDuplicate(duplicate);
-  };
-
-  const handleNotificationClose = () => {
-    setNotification(null);
   };
 
   return (
@@ -195,6 +181,11 @@ const AddMaterialModal = ({
             Tambah Material
           </Button>
         </div>
+        {error && (
+          <Notification color="red" className="absolute bottom-4 right-4">
+            {error}
+          </Notification>
+        )}
       </div>
     </Modal>
   );

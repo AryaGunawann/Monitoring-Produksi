@@ -152,43 +152,11 @@ const ShippingPage = () => {
         <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
           {shipping.jumlah}
         </Table.Td>
-        <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-          {shipping.status}
-        </Table.Td>
+
         <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
           {formatDate(new Date(shipping.updatedAt))}
         </Table.Td>
         <Table.Td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 space-x-2">
-          {shipping.status === "Proses" && (
-            <>
-              <Button
-                variant="outline"
-                color="blue"
-                onClick={() => handleConfirmStatusChange(shipping.id)}
-              >
-                Pending
-              </Button>
-              <Button
-                variant="outline"
-                color="blue"
-                onClick={() => handleConfirmStatusChange(shipping.id)}
-              >
-                Dikirim
-              </Button>
-            </>
-          )}
-          {shipping.status === "pending" && (
-            <>
-              <Button
-                variant="outline"
-                color="blue"
-                onClick={() => handleConfirmStatusChange(shipping.id)}
-              >
-                Dikirim
-              </Button>
-            </>
-          )}
-
           <Button
             color="red"
             onClick={() => {
@@ -236,9 +204,9 @@ const ShippingPage = () => {
                 <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Jumlah
                 </Table.Th>
-                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {/* <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
-                </Table.Th>
+                </Table.Th> */}
                 <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Updated At
                 </Table.Th>
