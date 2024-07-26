@@ -38,7 +38,7 @@ const AddPackingModal = ({
         produkId: parseInt(selectedProduct),
         jumlah: parseInt(jumlah),
       });
-      if (response.status === 201 || response.status === 200) {
+      if ((response && response.status === 201) || response.status === 200) {
         showNotification("Material berhasil ditambahkan!", "green");
         onPackingAdded();
         onClose();
