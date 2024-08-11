@@ -6,11 +6,7 @@ import {
   Loader,
   Alert,
   Title,
-  Button,
-  Modal,
-  Text,
   Container,
-  Notification,
   Pagination,
   Table,
 } from "@mantine/core";
@@ -74,9 +70,6 @@ const PackingTabel = () => {
 
   return (
     <Container className="mx-auto py-8">
-      <div className="mb-2 text-black">
-        <Title order={3}>Packing List</Title>
-      </div>
       {loading ? (
         <Loader />
       ) : error ? (

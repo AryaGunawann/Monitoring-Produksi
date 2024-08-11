@@ -4,13 +4,11 @@ import axios from "axios";
 import {
   Card,
   Title,
-  Button,
-  Modal,
-  Text,
+  Alert,
   Container,
-  Notification,
   Pagination,
   Table,
+  Loader,
 } from "@mantine/core";
 import AddShippingModal from "../../components/modal/shippingModal";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -34,6 +32,7 @@ const ShippingTabel = () => {
   const [shippings, setShippings] = useState<Shipping[]>([]);
   const [loading, setLoading] = useState(true);
   const [activePage, setActivePage] = useState(1);
+  const [error, setError] = useState<string | null>(null);
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -45,6 +44,7 @@ const ShippingTabel = () => {
       const response = await axios.get("/api/shipping");
       setShippings(response.data);
     } catch (error) {
+      setError("Error fetching shippings: " + error);
     } finally {
       setLoading(false);
     }
@@ -79,39 +79,40 @@ const ShippingTabel = () => {
 
   return (
     <Container className="mx-auto py-8">
-      <div className=" mb-2 text-black">
-        <Title order={3}>Daftar Pengiriman</Title>
-      </div>
+      {loading ? (
+        <Loader />
+      ) : error ? (
+        <Alert color="red">{error}</Alert>
+      ) : (
+        <Card shadow="sm" className="border rounded-lg p-4">
+          <div className="overflow-x-auto">
+            <Table
+              striped
+              withColumnBorders
+              className="min-w-full divide-y divide-gray-200"
+            >
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    No.
+                  </Table.Th>
+                  <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    ID | Nama
+                  </Table.Th>
+                  <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Jumlah
+                  </Table.Th>
 
-      <Card shadow="sm" className="border rounded-lg p-4">
-        <div className="overflow-x-auto">
-          <Table
-            striped
-            withColumnBorders
-            className="min-w-full divide-y divide-gray-200"
-          >
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  No.
-                </Table.Th>
-                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  ID | Nama
-                </Table.Th>
-                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Jumlah
-                </Table.Th>
-
-                <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Updated At
-                </Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>{renderTableRows()}</Table.Tbody>
-          </Table>
-        </div>
-      </Card>
-
+                  <Table.Th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Updated At
+                  </Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>{renderTableRows()}</Table.Tbody>
+            </Table>
+          </div>
+        </Card>
+      )}
       {shippings.length > itemsPerPage && (
         <Pagination
           value={activePage}

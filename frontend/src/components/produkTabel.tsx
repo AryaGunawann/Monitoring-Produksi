@@ -105,10 +105,7 @@ const ProductTabel = () => {
   };
 
   return (
-    <Container className="container mx-auto py-8">
-      <div className="mb-2 text-black">
-        <Title order={3}>Total Produk</Title>
-      </div>
+    <Container className=" mx-auto py-8">
       {loading ? (
         <Loader />
       ) : error ? (

@@ -26,9 +26,6 @@ const MaterialsTabel = () => {
 
   return (
     <Container className="c mx-auto py-8">
-      <div className="mb-2 text-black">
-        <Title order={3}>Material</Title>
-      </div>
       {loading ? (
         <Loader />
       ) : error ? (
