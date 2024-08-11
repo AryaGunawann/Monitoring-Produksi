@@ -103,7 +103,7 @@ const MaterialsPage = () => {
   }, [materials, activePage, itemsPerPage]);
 
   return (
-    <Container className="mx-auto py-8 relative">
+    <Container className="mx-auto py-8">
       <div className="flex justify-between mb-6 text-black">
         <Title order={1}>Daftar Material</Title>
         <Button onClick={openModal}>
@@ -190,6 +190,7 @@ const MaterialsPage = () => {
           className="mt-6"
         />
       )}
+
       <Modal
         opened={deleteConfirmModal}
         onClose={closeDeleteConfirmModal}
@@ -209,11 +210,12 @@ const MaterialsPage = () => {
           </Button>
         </div>
       </Modal>
+
       {notification && (
         <Notification
           color={notification.color}
           onClose={handleNotificationClose}
-          className="absolute bottom-4 right-4"
+          className="absolute bottom-6 right-4"
         >
           {notification.message}
         </Notification>

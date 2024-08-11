@@ -17,7 +17,6 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { formatDate } from "../../utils/date";
 import { FaPlus } from "react-icons/fa";
 
-// Interface definitions
 interface Shipping {
   id: number;
   Packing?: {
@@ -85,7 +84,6 @@ const ShippingPage = () => {
           showNotification("Pengiriman tidak dihapus.", "blue", true);
         }
       } catch (error) {
-        console.error("Error deleting shipping:", error);
         showNotification("Gagal menghapus pengiriman!", "red", true);
       } finally {
         setDeleteConfirmationModalOpen(false);
@@ -110,14 +108,6 @@ const ShippingPage = () => {
     } catch (error) {
       console.error("Error updating status:", error);
       showNotification("Gagal mengubah status!", "red", true);
-    }
-  };
-
-  const handleConfirmStatusChange = (id: number) => {
-    const selected = shippings.find((shipping) => shipping.id === id);
-    if (selected) {
-      setSelectedShipping(selected);
-      setConfirmationModalOpen(true);
     }
   };
 

@@ -181,11 +181,6 @@ const AddMaterialModal = ({
             Tambah Material
           </Button>
         </div>
-        {error && (
-          <Notification color="red" className="absolute bottom-4 right-4">
-            {error}
-          </Notification>
-        )}
       </div>
     </Modal>
   );
